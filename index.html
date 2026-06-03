@@ -1589,10 +1589,7 @@
   </ul>
   <div class="f-copy">© 2026 Whatsbnb. All rights reserved.</div>
   
-<!-- NETLIFY deploy status badge -->
-  <a href="https://app.netlify.com/projects/whatsbnb/deploy">
-  <img src="https://api.netlify.com/api/v1/badges/6bde7af8-a0fa-4093-aa0a-585d80bb4446/deploy-status" alt="Netlify Status" />
-</a>
+
 
 </footer>
 
@@ -1625,16 +1622,16 @@
 
   /* ── Pain bubbles staggered entrance ──────────────── */
   /* Typing bubble blink is handled entirely by CSS animation on .p-typing */
-  const painObs = new IntersectionObserver((entries) => {
-    if (entries[0].isIntersecting) {
+const painObs = new IntersectionObserver((entries) => {
+  if (entries[0].isIntersecting) {
+    requestAnimationFrame(() => {
       const bubbles = document.querySelectorAll('.q-bubble, .a-bubble');
-      requestAnimationFrame(() => {
-        bubbles.forEach((el, i) => el.style.setProperty('--anim-delay', `${i * 100}ms`));
-        document.querySelector('#pain').classList.add('visible');
-      });
-      painObs.disconnect();
-    }
-  }, { threshold: .15 });
+      bubbles.forEach((el, i) => el.style.setProperty('--anim-delay', `${i * 100}ms`));
+      document.querySelector('#pain').classList.add('visible');
+    });
+    painObs.disconnect();
+  }
+}, { threshold: .15 });
 
   const painSection = document.querySelector('#pain');
   if (painSection) painObs.observe(painSection);
