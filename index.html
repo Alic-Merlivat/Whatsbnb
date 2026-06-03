@@ -1,0 +1,1647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Whatsbnb — We reply so you don't have to...</title>
+  <meta name="description" content="Whatsbnb automates WhatsApp guest communication for Airbnb hosts. Train your AI once — it replies just like the best version of you, 24/7.">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="preload" as="image" href="Whatsbnb_logo.webp" fetchpriority="high">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" onload="this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"></noscript>
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --coral:    #FF5A5F;
+      --coral-d:  #e64e53;
+      --teal:     #00B2A9;
+      --orange:   #F26522;
+      --dark:     #4A4A4A;
+      --grey:     #767676;
+      --wa-dark:  #075E54;
+      --wa-mid:   #128C7E;
+      --wa-green: #25D366;
+      --wa-mint:  #DCF8C6;
+      --wa-bg:    #ECE5DD;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--dark);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ─── NAVBAR ──────────────────────────────────────── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      background: rgba(255,255,255,0.97);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid #f0f0f0;
+      padding: 0 6%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 68px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+    }
+
+    .nav-logo img {
+      height: 34px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 36px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--dark);
+      font-weight: 500;
+      font-size: 15px;
+      transition: color .2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--coral);
+    }
+
+    .nav-cta {
+      background: var(--coral);
+      color: white !important;
+      padding: 10px 22px;
+      border-radius: 9px;
+      font-weight: 700 !important;
+      box-shadow: 0 4px 14px rgba(255,90,95,.3);
+      transition: background .2s, transform .15s, box-shadow .2s !important;
+    }
+
+    .nav-cta:hover {
+      background: var(--coral-d) !important;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(255,90,95,.4) !important;
+    }
+
+    /* ─── HERO ────────────────────────────────────────── */
+    #hero {
+      min-height: 93vh;
+      display: flex;
+      align-items: center;
+      padding: 80px 6%;
+      gap: 64px;
+      background: linear-gradient(140deg, #fff 0%, #fafafa 55%, #f0fdf9 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    #hero::before {
+      content: '';
+      position: absolute;
+      top: -180px; right: -180px;
+      width: 560px; height: 560px;
+      background: radial-gradient(circle, rgba(37,211,102,.09) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    #hero::after {
+      content: '';
+      position: absolute;
+      bottom: -120px; left: -80px;
+      width: 420px; height: 420px;
+      background: radial-gradient(circle, rgba(255,90,95,.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      flex: 1;
+      max-width: 560px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      color: var(--wa-dark);
+      padding: 6px 16px;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 28px;
+    }
+
+    .hero-badge .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--wa-green);
+      animation: pulse-dot 2s infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: .5; transform: scale(.8); }
+    }
+
+    .hero-content h1 {
+      font-size: clamp(44px, 5.5vw, 72px);
+      font-weight: 900;
+      line-height: 1.04;
+      color: #111;
+      margin-bottom: 26px;
+      letter-spacing: -2.5px;
+    }
+
+    .coral { color: var(--coral); }
+    .green { color: var(--wa-green); }
+
+    .hero-sub {
+      font-size: 19px;
+      color: var(--grey);
+      line-height: 1.7;
+      margin-bottom: 40px;
+    }
+
+    .hero-ctas {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--coral);
+      color: white;
+      padding: 16px 32px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      text-decoration: none;
+      box-shadow: 0 6px 22px rgba(255,90,95,.35);
+      transition: all .2s;
+    }
+
+    .btn-primary:hover {
+      background: var(--coral-d);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 32px rgba(255,90,95,.42);
+    }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--dark);
+      font-size: 15px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: color .2s;
+    }
+
+    .btn-ghost:hover {
+      color: var(--coral);
+    }
+
+    .hero-trust {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      margin-top: 44px;
+      flex-wrap: wrap;
+    }
+
+    .trust-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--grey);
+    }
+
+    .trust-item .ck {
+      color: var(--wa-green);
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    /* ─── PHONE MOCKUP ────────────────────────────────── */
+    .hero-visual {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .phone-wrap {
+      position: relative;
+      filter: drop-shadow(0 32px 64px rgba(0,0,0,.18));
+    }
+
+    .instant-tag {
+      position: absolute;
+      top: -14px;
+      right: -24px;
+      background: var(--coral);
+      color: white;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 5px 13px;
+      border-radius: 100px;
+      letter-spacing: .3px;
+      box-shadow: 0 4px 12px rgba(255,90,95,.45);
+      animation: pop-in 0.6s ease 0.8s both;
+    }
+
+    @keyframes pop-in {
+      from { opacity: 0; transform: scale(.6) translateY(6px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .phone {
+      width: 288px;
+      background: white;
+      border-radius: 40px;
+      overflow: hidden;
+      border: 6px solid #e8e8e8;
+    }
+
+    .phone-bar {
+      background: var(--wa-dark);
+      padding: 14px 16px 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .p-avatar {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--wa-green), var(--wa-dark));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      flex-shrink: 0;
+    }
+
+    .p-info {
+      flex: 1;
+    }
+
+    .p-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: white;
+    }
+
+    .p-online {
+      font-size: 11px;
+      color: rgba(255, 255, 255, .7);
+    }
+
+    .p-chat {
+      background: var(--wa-bg);
+      padding: 14px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .p-date {
+      text-align: center;
+      font-size: 11px;
+      color: #888;
+      background: rgba(255,255,255,.7);
+      padding: 3px 10px;
+      border-radius: 8px;
+      align-self: center;
+    }
+
+    .p-bubble {
+      max-width: 82%;
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.55;
+      position: relative;
+    }
+
+    .p-bubble.g { /* guest */
+      background: white;
+      align-self: flex-start;
+      border-radius: 0 8px 8px 8px;
+      box-shadow: 0 1px 2px rgba(0,0,0,.08);
+    }
+
+    .p-bubble.b { /* bot */
+      background: var(--wa-mint);
+      align-self: flex-end;
+      border-radius: 8px 0 8px 8px;
+      box-shadow: 0 1px 2px rgba(0,0,0,.08);
+    }
+
+    .p-time {
+      display: block;
+      font-size: 10px;
+      color: #aaa;
+      text-align: right;
+      margin-top: 3px;
+    }
+
+    .p-ticks {
+      color: #53bdeb;
+    }
+
+    .p-typing {
+      background: white;
+      align-self: flex-start;
+      border-radius: 0 8px 8px 8px;
+      padding: 11px 14px;
+      animation: typing-blink 5s ease infinite;
+    }
+
+    @keyframes typing-blink {
+      0%   { opacity: 1; }
+      32%  { opacity: 1; }
+      38%  { opacity: 0; }
+      99%  { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    .dots {
+      display: flex;
+      gap: 5px;
+    }
+
+    .dots span {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #bbb;
+      animation: bounce-dot 1.2s infinite;
+    }
+
+    .dots span:nth-child(2) { animation-delay: .18s; }
+    .dots span:nth-child(3) { animation-delay: .36s; }
+
+    @keyframes bounce-dot {
+      0%,80%,100% { transform: translateY(0); }
+      40%          { transform: translateY(-7px); }
+    }
+
+    /* ─── PAIN SECTION ────────────────────────────────── */
+    #pain {
+      background: #111;
+      padding: 110px 6%;
+      text-align: center;
+    }
+
+    .label-green {
+      display: inline-block;
+      color: var(--wa-green);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+
+    .label-coral {
+      display: inline-block;
+      color: var(--coral);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+
+    .h2-white {
+      font-size: clamp(34px, 4.5vw, 54px);
+      font-weight: 900;
+      color: white;
+      letter-spacing: -2px;
+      margin-bottom: 14px;
+    }
+
+    .sub-grey {
+      font-size: 17px;
+      color: #888;
+      max-width: 480px;
+      margin: 0 auto 64px;
+    }
+
+    .sub-grey strong {
+      color: white;
+    }
+
+    .q-a-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .q-a-pair {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .q-bubble {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      align-self: flex-start;
+      background: white;
+      color: #111;
+      padding: 13px 20px;
+      border-radius: 0 18px 18px 18px;
+      font-size: 15px;
+      font-weight: 500;
+      box-shadow: 0 4px 18px rgba(0,0,0,.25);
+      opacity: 0;
+      transform: translateX(-30px);
+      transition: opacity .5s ease var(--anim-delay, 0ms), transform .5s ease var(--anim-delay, 0ms);
+    }
+
+    .q-bubble .emo {
+      font-size: 18px;
+    }
+
+    .a-bubble {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      align-self: flex-end;
+      background: var(--wa-mint);
+      color: #111;
+      padding: 11px 18px;
+      border-radius: 18px 0 18px 18px;
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 4px 18px rgba(37,211,102,.18);
+      opacity: 0;
+      transform: translateX(30px);
+      transition: opacity .5s ease var(--anim-delay, 0ms), transform .5s ease var(--anim-delay, 0ms);
+    }
+
+    #pain.visible .q-bubble,
+    #pain.visible .a-bubble {
+      opacity: 1;
+      transform: none;
+    }
+
+    .tick-circle {
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      background: var(--wa-green);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    /* ─── HOW IT WORKS ────────────────────────────────── */
+    #how {
+      padding: 120px 6%;
+      background: white;
+    }
+
+    .section-head {
+      text-align: center;
+      margin-bottom: 80px;
+    }
+
+    .section-head h2 {
+      font-size: clamp(32px, 4vw, 50px);
+      font-weight: 900;
+      color: #111;
+      letter-spacing: -1.8px;
+      margin-bottom: 14px;
+    }
+
+    .section-head p {
+      font-size: 18px;
+      color: var(--grey);
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 32px;
+      max-width: 920px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .steps-line {
+      position: absolute;
+      top: 50px;
+      left: calc(50% / 3);
+      right: calc(50% / 3);
+      height: 2px;
+      background: linear-gradient(90deg, var(--wa-green), var(--coral));
+      z-index: 0;
+    }
+
+    .step {
+      text-align: center;
+      position: relative;
+      z-index: 1;
+      padding: 40px 24px 32px;
+      background: #fafafa;
+      border-radius: 20px;
+      border: 1px solid #f0f0f0;
+      transition: transform .2s, box-shadow .2s;
+    }
+
+    .step:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 36px rgba(0,0,0,.07);
+    }
+
+    .step-num-wrap {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      margin: 0 auto 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+    }
+
+    .step:nth-child(1) .step-num-wrap {
+      background: #fff0f0;
+    }
+
+    .step:nth-child(2) .step-num-wrap {
+      background: #f0fdf4;
+    }
+
+    .step:nth-child(3) .step-num-wrap {
+      background: #f0fdff;
+    }
+
+    .step h3 {
+      font-size: 19px;
+      font-weight: 800;
+      color: #111;
+      margin-bottom: 10px;
+    }
+
+    .step p {
+      font-size: 14px;
+      color: var(--grey);
+      line-height: 1.65;
+    }
+
+    /* ─── TONE SECTION ────────────────────────────────── */
+    #tone {
+      padding: 120px 6%;
+      background: #f9f9f9;
+    }
+
+    .tone-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      max-width: 960px;
+      margin: 0 auto;
+      align-items: center;
+    }
+
+    .tone-phones {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .t-phone {
+      flex: 1;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0,0,0,.1);
+      border: 1px solid #e8e8e8;
+    }
+
+    .t-phone-hdr {
+      padding: 10px 14px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: white;
+    }
+
+    .t-phone-hdr.you {
+      background: var(--coral);
+    }
+
+    .t-phone-hdr.ai {
+      background: var(--wa-green);
+    }
+
+    .t-phone-body {
+      background: var(--wa-bg);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-height: 190px;
+    }
+
+    .t-bubble {
+      background: var(--wa-mint);
+      padding: 9px 12px;
+      border-radius: 8px 0 8px 8px;
+      font-size: 12px;
+      line-height: 1.5;
+      color: #111;
+      align-self: flex-end;
+      max-width: 90%;
+    }
+
+    .vs-pill {
+      background: linear-gradient(135deg, var(--coral), var(--wa-green));
+      color: white;
+      font-size: 11px;
+      font-weight: 900;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 90px;
+      box-shadow: 0 4px 12px rgba(0,0,0,.15);
+    }
+
+    .tone-text h2 {
+      font-size: clamp(28px, 3.5vw, 44px);
+      font-weight: 900;
+      color: #111;
+      letter-spacing: -1.8px;
+      margin: 14px 0 20px;
+    }
+
+    .tone-text > p {
+      font-size: 17px;
+      color: var(--grey);
+      line-height: 1.7;
+      margin-bottom: 32px;
+    }
+
+    .t-feat {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .t-feat-icon {
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      background: #f0fdf4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .t-feat strong {
+      display: block;
+      font-size: 15px;
+      color: #111;
+      margin-bottom: 2px;
+    }
+
+    .t-feat span {
+      font-size: 14px;
+      color: var(--grey);
+    }
+
+    /* ─── WORLDS ──────────────────────────────────────── */
+    #worlds {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .world {
+      padding: 90px 64px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .world-wa  { background: var(--wa-dark); }
+    .world-bnb { background: var(--coral); }
+
+    .world-icon {
+      font-size: 60px;
+      margin-bottom: 22px;
+    }
+
+    .world h3 {
+      font-size: 26px;
+      font-weight: 900;
+      color: white;
+      margin-bottom: 12px;
+      letter-spacing: -.5px;
+    }
+
+    .world p {
+      font-size: 15px;
+      color: rgba(255, 255, 255, .75);
+      line-height: 1.65;
+      max-width: 280px;
+    }
+
+    .worlds-bridge {
+      background: #111;
+      padding: 64px 6%;
+      text-align: center;
+    }
+
+    .worlds-bridge h2 {
+      font-size: clamp(26px, 3.5vw, 44px);
+      font-weight: 900;
+      color: white;
+      letter-spacing: -1.5px;
+      margin-bottom: 14px;
+    }
+
+    .worlds-bridge p {
+      font-size: 17px;
+      color: #888;
+    }
+
+    /* ─── SOCIAL PROOF ────────────────────────────────── */
+    #proof {
+      padding: 120px 6%;
+      background: white;
+    }
+
+    .testimonials {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 24px;
+      max-width: 1040px;
+      margin: 0 auto;
+    }
+
+    .tcard {
+      background: #f9f9f9;
+      border-radius: 20px;
+      padding: 32px;
+      border: 1px solid #efefef;
+      transition: transform .2s, box-shadow .2s;
+    }
+
+    .tcard:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 36px rgba(0,0,0,.07);
+    }
+
+    .stars {
+      color: #FFB800;
+      font-size: 14px;
+      margin-bottom: 14px;
+      letter-spacing: 2px;
+    }
+
+    .tcard blockquote {
+      font-size: 15px;
+      color: var(--dark);
+      line-height: 1.7;
+      font-style: italic;
+      margin-bottom: 22px;
+    }
+
+    .t-author {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .t-av {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .t-info strong {
+      display: block;
+      font-size: 14px;
+      color: #111;
+    }
+
+    .t-info span {
+      font-size: 13px;
+      color: var(--grey);
+    }
+
+    /* ─── PRICING ─────────────────────────────────────── */
+    #pricing {
+      padding: 120px 6%;
+      background: #f9f9f9;
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 24px;
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    .pcard {
+      background: white;
+      border-radius: 24px;
+      padding: 40px 32px;
+      border: 2px solid #eee;
+      position: relative;
+      transition: transform .2s, box-shadow .2s;
+    }
+
+    .pcard:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 14px 44px rgba(0,0,0,.08);
+    }
+
+    .pcard.popular {
+      border-color: var(--coral);
+      box-shadow: 0 8px 36px rgba(255,90,95,.14);
+    }
+
+    .pop-badge {
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--coral);
+      color: white;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 5px 18px;
+      border-radius: 100px;
+      white-space: nowrap;
+      letter-spacing: .5px;
+    }
+
+    .p-tier {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--grey);
+      margin-bottom: 10px;
+    }
+
+    .p-price {
+      font-size: 52px;
+      font-weight: 900;
+      color: #111;
+      letter-spacing: -2.5px;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .p-price sup {
+      font-size: 24px;
+      letter-spacing: 0;
+      vertical-align: super;
+    }
+
+    .p-per {
+      font-size: 14px;
+      color: var(--grey);
+      margin-bottom: 28px;
+    }
+
+    .p-feats {
+      list-style: none;
+      margin-bottom: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .p-feats li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      color: var(--dark);
+    }
+
+    .p-feats .ck {
+      color: var(--wa-green);
+      font-weight: 800;
+      font-size: 15px;
+    }
+
+    .p-feats .no {
+      color: #ccc;
+      font-size: 15px;
+    }
+
+    .p-feats .dim {
+      color: #ccc;
+    }
+
+    .p-btn {
+      display: block;
+      text-align: center;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all .2s;
+    }
+
+    .p-btn.outline {
+      border: 2px solid #e0e0e0;
+      color: var(--dark);
+    }
+
+    .p-btn.outline:hover {
+      border-color: var(--coral);
+      color: var(--coral);
+    }
+
+    .p-btn.filled {
+      background: var(--coral);
+      color: white;
+      box-shadow: 0 4px 16px rgba(255,90,95,.3);
+    }
+
+    .p-btn.filled:hover {
+      background: var(--coral-d);
+      transform: translateY(-1px);
+    }
+
+    /* ─── FINAL CTA ───────────────────────────────────── */
+    #cta {
+      background: linear-gradient(135deg, var(--wa-dark) 0%, var(--wa-mid) 60%, #19756a 100%);
+      padding: 120px 6%;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #cta::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    #cta h2 {
+      font-size: clamp(38px, 5.5vw, 70px);
+      font-weight: 900;
+      color: white;
+      letter-spacing: -2.5px;
+      margin-bottom: 18px;
+      position: relative;
+    }
+
+    #cta > p {
+      font-size: 18px;
+      color: rgba(255,255,255,.72);
+      margin-bottom: 48px;
+      position: relative;
+    }
+
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: white;
+      color: var(--wa-dark);
+      padding: 18px 40px;
+      border-radius: 14px;
+      font-size: 17px;
+      font-weight: 800;
+      text-decoration: none;
+      box-shadow: 0 8px 32px rgba(0,0,0,.2);
+      transition: all .2s;
+      position: relative;
+    }
+
+    .cta-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 44px rgba(0, 0, 0, .28);
+    }
+
+    .cta-note {
+      display: block;
+      font-size: 13px;
+      color: rgba(255,255,255,.55);
+      margin-top: 18px;
+      position: relative;
+    }
+
+    /* ─── FOOTER ──────────────────────────────────────── */
+    footer {
+      background: #111;
+      padding: 44px 6%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    footer .f-logo img { height: 28px; }
+
+    footer .f-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+
+    footer .f-links a {
+      color: #666;
+      text-decoration: none;
+      font-size: 14px;
+      transition: color .2s;
+    }
+
+    footer .f-links a:hover {
+      color: white;
+    }
+
+    footer .f-copy {
+      color: #555;
+      font-size: 13px;
+    }
+
+    /* ─── REVEAL ANIMATION ────────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity .65s ease, transform .65s ease;
+    }
+
+    .reveal.in {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* ─── RESPONSIVE ──────────────────────────────────── */
+    @media (max-width: 900px) {
+      #hero {
+        flex-direction: column;
+        padding: 60px 5%;
+        text-align: center;
+        gap: 48px;
+      }
+
+      .hero-content {
+        max-width: 100%;
+      }
+
+      .hero-ctas {
+        justify-content: center;
+      }
+
+      .hero-trust {
+        justify-content: center;
+      }
+
+      .steps {
+        grid-template-columns: 1fr;
+      }
+
+      .tone-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .tone-phones {
+        display: none;
+      }
+
+      #worlds {
+        grid-template-columns: 1fr;
+      }
+
+      .testimonials {
+        grid-template-columns: 1fr;
+      }
+
+      .pricing-grid {
+        grid-template-columns: 1fr;
+        max-width: 380px;
+      }
+
+      footer {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      footer .f-links {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 16px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      nav {
+        padding: 0 4%;
+      }
+
+      .nav-links li:not(:last-child) {
+        display: none;
+      }
+
+      .phone {
+        width: 260px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════
+     NAVBAR
+════════════════════════════════════════════════════════ -->
+<nav>
+  <a href="#" class="nav-logo">
+    <img src="Whatsbnb_logo.webp" alt="Whatsbnb" fetchpriority="high">
+  </a>
+  <ul class="nav-links">
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#">Login</a></li>
+    <li><a href="#" class="nav-cta">Get Started Free</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- ═══════════════════════════════════════════════════════
+     HERO
+════════════════════════════════════════════════════════ -->
+<section id="hero">
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      AI is live · Replies in seconds
+    </div>
+
+    <h1>We reply<br>so you<br><span class="coral">don't have to.</span></h1>
+
+    <p class="hero-sub">
+      AI-powered messaging for Airbnb hosts.<br>
+      Your guests get instant answers. You get your time back.
+    </p>
+
+    <div class="hero-ctas">
+      <a href="coming-soon.html" class="btn-primary">
+        Join the waitlist
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+      </a>
+      <a href="#how" class="btn-ghost">
+        See how it works
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 9l-7 7-7-7"/></svg>
+      </a>
+    </div>
+
+    <div class="hero-trust">
+      <div class="trust-item"><span class="ck">✓</span> No credit card required</div>
+      <div class="trust-item"><span class="ck">✓</span> Free 14-day trial</div>
+      <div class="trust-item"><span class="ck">✓</span> Setup in 5 minutes</div>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <div class="phone-wrap">
+      <div class="instant-tag">⚡ Replies in 2 seconds</div>
+      <div class="phone">
+        <div class="phone-bar">
+          <div class="p-avatar">🏠</div>
+          <div class="p-info">
+            <div class="p-name">Whatsbnb AI</div>
+            <div class="p-online">● online</div>
+          </div>
+        </div>
+        <div class="p-chat">
+          <div class="p-date">Today</div>
+
+          <div class="p-bubble g">
+            What's the Wi-Fi password? 📶
+            <span class="p-time">10:23</span>
+          </div>
+
+          <div class="p-bubble b">
+            The Wi-Fi is <strong>HomeSweet5G</strong><br>Password: <strong>Airbnb2024!</strong> 🏡<br>Let me know if you need anything!
+            <span class="p-time">10:23 <span class="p-ticks">✓✓</span></span>
+          </div>
+
+          <div class="p-bubble g">
+            Can I check in early? 🙏
+            <span class="p-time">10:31</span>
+          </div>
+
+          <div class="p-bubble b">
+            Check-in is from 3 pm. I'll let you know if the place is ready earlier! 😊
+            <span class="p-time">10:31 <span class="p-ticks">✓✓</span></span>
+          </div>
+
+          <div class="p-bubble g">
+            Do you have towels &amp; shower gel?
+            <span class="p-time">10:44</span>
+          </div>
+
+          <div class="p-bubble b">
+            Yes — fresh towels are on the bed and shower gel is in the bathroom 🛁
+            <span class="p-time">10:44 <span class="p-ticks">✓✓</span></span>
+          </div>
+
+          <div class="p-bubble p-typing">
+            <div class="dots"><span></span><span></span><span></span></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     PAIN POINT
+════════════════════════════════════════════════════════ -->
+<section id="pain">
+  <div class="label-green">Sound familiar?</div>
+  <h2 class="h2-white">Every host knows these messages.</h2>
+  <p class="sub-grey">The same questions. Every booking. Every guest.<br><strong>Until now.</strong></p>
+
+  <div class="q-a-list">
+
+    <div class="q-a-pair">
+      <div class="q-bubble"><span class="emo">🤷</span> What's the Wi-Fi password?</div>
+      <div class="a-bubble"><span class="tick-circle">✓</span> Whatsbnb replies instantly</div>
+    </div>
+
+    <div class="q-a-pair">
+      <div class="q-bubble"><span class="emo">🧳</span> Can I drop my luggage early?</div>
+      <div class="a-bubble"><span class="tick-circle">✓</span> Whatsbnb replies instantly</div>
+    </div>
+
+    <div class="q-a-pair">
+      <div class="q-bubble"><span class="emo">🕐</span> What time is check-out?</div>
+      <div class="a-bubble"><span class="tick-circle">✓</span> Whatsbnb replies instantly</div>
+    </div>
+
+    <div class="q-a-pair">
+      <div class="q-bubble"><span class="emo">🛁</span> Do you have towels? Is there shower gel?</div>
+      <div class="a-bubble"><span class="tick-circle">✓</span> Whatsbnb replies instantly</div>
+    </div>
+
+    <div class="q-a-pair">
+      <div class="q-bubble"><span class="emo">🚗</span> Where can I park?</div>
+      <div class="a-bubble"><span class="tick-circle">✓</span> Whatsbnb replies instantly</div>
+    </div>
+
+  </div>
+</section>
+
+
+<section id="how">
+  <div class="section-head reveal">
+    <div class="label-coral">Simple setup</div>
+    <h2>Up and running in minutes.</h2>
+    <p>No tech skills needed. Connect once — Whatsbnb handles everything else.</p>
+  </div>
+
+  <div class="steps">
+    <div class="step reveal">
+      <div class="step-num-wrap">🔗</div>
+      <h3>Connect your Airbnb</h3>
+      <p>Link your listing in one click. We import your house manual, rules, and booking details automatically.</p>
+    </div>
+    <div class="step reveal">
+      <div class="step-num-wrap">🤖</div>
+      <h3>Whatsbnb learns your home</h3>
+      <p>The AI reads your listing, learns your tone, and masters every detail about your property — in seconds.</p>
+    </div>
+    <div class="step reveal">
+      <div class="step-num-wrap">💬</div>
+      <h3>Guests ask. We answer.</h3>
+      <p>Guests message on WhatsApp. Whatsbnb replies instantly, 24/7. You only hear from us when it truly needs you.</p>
+    </div>
+  </div>
+</section>
+
+
+
+<section id="tone">
+  <div class="tone-grid">
+    <div class="tone-phones reveal">
+      <div class="t-phone">
+        <div class="t-phone-hdr you">Your style</div>
+        <div class="t-phone-body">
+          <div class="t-bubble">Hey! WiFi is BeachHouse5G, pass is Summer2024 ☀️</div>
+          <div class="t-bubble">Check-out is 11am but no rush if you need a few extra mins 😊</div>
+          <div class="t-bubble">Towels are on the bed, shower gel in the bathroom — enjoy!</div>
+        </div>
+      </div>
+      <div class="vs-pill">VS</div>
+      <div class="t-phone">
+        <div class="t-phone-hdr ai">Whatsbnb</div>
+        <div class="t-phone-body">
+          <div class="t-bubble">Hey! WiFi is BeachHouse5G, pass is Summer2024 ☀️</div>
+          <div class="t-bubble">Check-out is 11am but no rush if you need a few extra mins 😊</div>
+          <div class="t-bubble">Towels are on the bed, shower gel in the bathroom — enjoy!</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tone-text reveal">
+      <div class="label-coral">Your voice, not a robot's</div>
+      <h2>Guests will never know it's AI.</h2>
+      <p>Whatsbnb mirrors your writing style. Warm or formal, brief or detailed — it sounds exactly like you.</p>
+
+      <div class="t-feat">
+        <div class="t-feat-icon">🎭</div>
+        <div>
+          <strong>Tone matching</strong>
+          <span>Learns your personality from your listing and past messages</span>
+        </div>
+      </div>
+      <div class="t-feat">
+        <div class="t-feat-icon">🌍</div>
+        <div>
+          <strong>Multilingual</strong>
+          <span>Automatically replies in your guest's language</span>
+        </div>
+      </div>
+      <div class="t-feat">
+        <div class="t-feat-icon">🔔</div>
+        <div>
+          <strong>Smart escalation</strong>
+          <span>Notifies you only when a question truly needs you</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     BEST OF TWO WORLDS
+════════════════════════════════════════════════════════ -->
+<div id="worlds">
+  <div class="world world-wa">
+    <div class="world-icon">💬</div>
+    <h3>WhatsApp Business</h3>
+    <p>The world's most-loved messaging app. Instant, reliable, and familiar to every guest on the planet.</p>
+  </div>
+  <div class="world world-bnb">
+    <div class="world-icon">🏠</div>
+    <h3>Airbnb</h3>
+    <p>The world's favourite platform for short-term rentals. Your bookings, reviews, and revenue — all in one place.</p>
+  </div>
+</div>
+<div class="worlds-bridge">
+  <h2><span class="green">WhatsApp</span> for communication. <span class="coral">Airbnb</span> for bookings.</h2>
+  <p>Whatsbnb is the bridge — the best of both worlds, finally working together.</p>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     SOCIAL PROOF
+════════════════════════════════════════════════════════ -->
+<section id="proof">
+  <div class="section-head reveal">
+    <div class="label-coral">Host stories</div>
+    <h2>Hosts who got their evenings back.</h2>
+  </div>
+
+  <div class="testimonials">
+    <div class="tcard reveal">
+      <div class="stars">★★★★★</div>
+      <blockquote>"I used to spend 2 hours a day on the same questions. Now I check in once a week. Whatsbnb handles everything — and my guests love the instant replies."</blockquote>
+      <div class="t-author">
+        <div class="t-av" style="background:#fff0f0;">🇫🇷</div>
+        <div class="t-info">
+          <strong>Sophie M.</strong>
+          <span>3 listings · Paris</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tcard reveal">
+      <div class="stars">★★★★★</div>
+      <blockquote>"My review score went from 4.7 to 4.9 in two months. Guests comment on how 'responsive' I am. They have no idea it's AI — and that's the point."</blockquote>
+      <div class="t-author">
+        <div class="t-av" style="background:#f0f4ff;">🇬🇧</div>
+        <div class="t-info">
+          <strong>James K.</strong>
+          <span>7 listings · London</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tcard reveal">
+      <div class="stars">★★★★★</div>
+      <blockquote>"Setup took 8 minutes. I connected my Airbnb, uploaded my house guide, and Whatsbnb was already replying to a guest before I finished my coffee."</blockquote>
+      <div class="t-author">
+        <div class="t-av" style="background:#f0fff4;">🇧🇷</div>
+        <div class="t-info">
+          <strong>Ana R.</strong>
+          <span>1 listing · São Paulo</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     PRICING
+════════════════════════════════════════════════════════ -->
+<section id="pricing">
+  <div class="section-head reveal">
+    <div class="label-coral">Pricing</div>
+    <h2>Simple pricing. No surprises.</h2>
+    <p>Start free, scale when you're ready. Cancel anytime.</p>
+  </div>
+
+  <div class="pricing-grid">
+
+    <div class="pcard reveal">
+      <div class="p-tier">Starter</div>
+      <div class="p-price"><sup>€</sup>0</div>
+      <div class="p-per">Free forever · 1 listing</div>
+      <ul class="p-feats">
+        <li><span class="ck">✓</span> 1 Airbnb listing</li>
+        <li><span class="ck">✓</span> 50 AI replies / month</li>
+        <li><span class="ck">✓</span> WhatsApp integration</li>
+        <li><span class="ck">✓</span> Smart escalation alerts</li>
+        <li><span class="no">—</span> <span class="dim">Multilingual replies</span></li>
+        <li><span class="no">—</span> <span class="dim">Analytics dashboard</span></li>
+      </ul>
+      <a href="#" class="p-btn outline">Start for free</a>
+    </div>
+
+    <div class="pcard popular reveal">
+      <div class="pop-badge">Most popular</div>
+      <div class="p-tier">Pro</div>
+      <div class="p-price"><sup>€</sup>29</div>
+      <div class="p-per">per month · up to 5 listings</div>
+      <ul class="p-feats">
+        <li><span class="ck">✓</span> Up to 5 Airbnb listings</li>
+        <li><span class="ck">✓</span> Unlimited AI replies</li>
+        <li><span class="ck">✓</span> WhatsApp integration</li>
+        <li><span class="ck">✓</span> Smart escalation alerts</li>
+        <li><span class="ck">✓</span> Multilingual replies</li>
+        <li><span class="ck">✓</span> Analytics dashboard</li>
+      </ul>
+      <a href="#" class="p-btn filled">Get started</a>
+    </div>
+
+    <div class="pcard reveal">
+      <div class="p-tier">Scale</div>
+      <div class="p-price"><sup>€</sup>79</div>
+      <div class="p-per">per month · unlimited listings</div>
+      <ul class="p-feats">
+        <li><span class="ck">✓</span> Unlimited listings</li>
+        <li><span class="ck">✓</span> Unlimited AI replies</li>
+        <li><span class="ck">✓</span> WhatsApp integration</li>
+        <li><span class="ck">✓</span> Priority escalation alerts</li>
+        <li><span class="ck">✓</span> Multilingual replies</li>
+        <li><span class="ck">✓</span> Advanced analytics &amp; reports</li>
+      </ul>
+      <a href="#" class="p-btn outline">Get started</a>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     FINAL CTA
+════════════════════════════════════════════════════════ -->
+<section id="cta">
+  <h2>We reply so you<br>don't have to...</h2>
+  <p>Join Airbnb hosts who've reclaimed their time — without sacrificing guest experience.</p>
+  <a href="coming-soon.html" class="cta-btn">
+    Join the waitlist
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+  </a>
+  <span class="cta-note">No credit card required · Cancel anytime · Setup in 5 minutes</span>
+</section>
+
+
+</main>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     FOOTER
+════════════════════════════════════════════════════════ -->
+<footer>
+  <div class="f-logo">
+    <img src="Whatsbnb_logo.webp" alt="Whatsbnb" loading="lazy">
+  </div>
+  <ul class="f-links">
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#">Privacy</a></li>
+    <li><a href="core-values.html">Core Values</a></li>
+    <li><a href="#">Contact</a></li>
+  </ul>
+  <div class="f-copy">© 2026 Whatsbnb. All rights reserved.</div>
+  
+<!-- NETLIFY deploy status badge -->
+  <a href="https://app.netlify.com/projects/whatsbnb/deploy">
+  <img src="https://api.netlify.com/api/v1/badges/6bde7af8-a0fa-4093-aa0a-585d80bb4446/deploy-status" alt="Netlify Status" />
+</a>
+
+</footer>
+
+
+<script>
+  /* ── Scroll reveal ─────────────────────────────────── */
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('in'), i * 90);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  /* ── Smooth scroll ─────────────────────────────────── */
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const id = a.getAttribute('href');
+      if (id === '#') return;
+      const target = document.querySelector(id);
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  /* ── Pain bubbles staggered entrance ──────────────── */
+  /* Typing bubble blink is handled entirely by CSS animation on .p-typing */
+  const painObs = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+      const bubbles = document.querySelectorAll('.q-bubble, .a-bubble');
+      requestAnimationFrame(() => {
+        bubbles.forEach((el, i) => el.style.setProperty('--anim-delay', `${i * 100}ms`));
+        document.querySelector('#pain').classList.add('visible');
+      });
+      painObs.disconnect();
+    }
+  }, { threshold: .15 });
+
+  const painSection = document.querySelector('#pain');
+  if (painSection) painObs.observe(painSection);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Core Values — Whatsbnb</title>
+  <meta name="description" content="The principles that guide how we build Whatsbnb and serve Airbnb hosts around the world.">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --coral:    #FF5A5F;
+      --coral-d:  #e64e53;
+      --dark:     #4A4A4A;
+      --grey:     #767676;
+      --wa-dark:  #075E54;
+      --wa-green: #25D366;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--dark);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ─── NAVBAR ──────────────────────────────────────── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      background: rgba(255, 255, 255, 0.97);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid #f0f0f0;
+      padding: 0 6%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 68px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .nav-logo img {
+      height: 34px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 36px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--dark);
+      font-weight: 500;
+      font-size: 15px;
+      transition: color .2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--coral);
+    }
+
+    .nav-cta {
+      background: var(--coral);
+      color: white !important;
+      padding: 10px 22px;
+      border-radius: 9px;
+      font-weight: 700 !important;
+      box-shadow: 0 4px 14px rgba(255, 90, 95, .3);
+      transition: background .2s, transform .15s, box-shadow .2s !important;
+    }
+
+    .nav-cta:hover {
+      background: var(--coral-d) !important;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(255, 90, 95, .4) !important;
+    }
+
+    /* ─── HERO ────────────────────────────────────────── */
+    .page-hero {
+      background: linear-gradient(140deg, #fff 0%, #fafafa 55%, #f0fdf9 100%);
+      padding: 100px 6% 80px;
+      text-align: center;
+    }
+
+    .label-coral {
+      display: inline-block;
+      color: var(--coral);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+
+    .page-hero h1 {
+      font-size: clamp(40px, 5vw, 66px);
+      font-weight: 900;
+      color: #111;
+      letter-spacing: -2.5px;
+      line-height: 1.06;
+      margin-bottom: 22px;
+    }
+
+    .page-hero p {
+      font-size: 19px;
+      color: var(--grey);
+      max-width: 540px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    /* ─── VALUES GRID ─────────────────────────────────── */
+    .values-section {
+      padding: 100px 6%;
+      background: white;
+    }
+
+    .values-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 28px;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    .value-card {
+      background: #fafafa;
+      border: 1px solid #f0f0f0;
+      border-radius: 24px;
+      padding: 40px 32px;
+      transition: transform .2s, box-shadow .2s;
+    }
+
+    .value-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 36px rgba(0, 0, 0, .07);
+    }
+
+    .value-icon {
+      width: 350px;
+      height: 350px;
+      object-fit: contain;
+      margin-bottom: 3px;
+    }
+
+    .value-card h2 {
+      font-size: 20px;
+      font-weight: 800;
+      color: #111;
+      letter-spacing: -.5px;
+      margin-bottom: 12px;
+    }
+
+    .value-card p {
+      font-size: 15px;
+      color: var(--grey);
+      line-height: 1.7;
+    }
+
+    /* ─── CLOSING BANNER ─────────────────────────────── */
+    .closing {
+      background: #111;
+      padding: 90px 6%;
+      text-align: center;
+    }
+
+    .closing h2 {
+      font-size: clamp(28px, 4vw, 48px);
+      font-weight: 900;
+      color: white;
+      letter-spacing: -1.8px;
+      margin-bottom: 16px;
+    }
+
+    .closing p {
+      font-size: 17px;
+      color: #888;
+      max-width: 480px;
+      margin: 0 auto 40px;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--coral);
+      color: white;
+      padding: 16px 32px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      text-decoration: none;
+      box-shadow: 0 6px 22px rgba(255, 90, 95, .35);
+      transition: all .2s;
+    }
+
+    .btn-primary:hover {
+      background: var(--coral-d);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 32px rgba(255, 90, 95, .42);
+    }
+
+    /* ─── FOOTER ──────────────────────────────────────── */
+    footer {
+      background: #111;
+      padding: 44px 6%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 20px;
+      border-top: 1px solid #222;
+    }
+
+    footer .f-logo img {
+      height: 28px;
+    }
+
+    footer .f-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+
+    footer .f-links a {
+      color: #666;
+      text-decoration: none;
+      font-size: 14px;
+      transition: color .2s;
+    }
+
+    footer .f-links a:hover {
+      color: white;
+    }
+
+    footer .f-copy {
+      color: #555;
+      font-size: 13px;
+    }
+
+    /* ─── RESPONSIVE ──────────────────────────────────── */
+    @media (max-width: 900px) {
+      .values-grid {
+        grid-template-columns: 1fr;
+        max-width: 520px;
+      }
+
+      footer {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      footer .f-links {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 16px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      nav {
+        padding: 0 4%;
+      }
+
+      .nav-links li:not(:last-child) {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════
+     NAVBAR
+════════════════════════════════════════════════════════ -->
+<nav>
+  <a href="index.html" class="nav-logo">
+    <img src="Whatsbnb_logo.webp" alt="Whatsbnb" loading="lazy">
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html#how">How it works</a></li>
+    <li><a href="index.html#pricing">Pricing</a></li>
+    <li><a href="#">Login</a></li>
+    <li><a href="#" class="nav-cta">Get Started Free</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- ═══════════════════════════════════════════════════════
+     PAGE HERO
+════════════════════════════════════════════════════════ -->
+<section class="page-hero">
+  <div class="label-coral">Who we are</div>
+  <h1>Whatsbnb Core Values</h1>
+  <p>These are the principles that guide every decision we make — from how we build the product to how we treat every host and guest.</p>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     VALUES GRID
+════════════════════════════════════════════════════════ -->
+<section class="values-section">
+  <div class="values-grid">
+
+    <div class="value-card">
+      <img class="value-icon" src="1beahost.png" alt="Be a Host, Not an Answering Machine">
+      <h2>Be a Host, Not an Answering Machine</h2>
+      <p>Whatsbnb was born from a painful reality: hosts can't always be available, and repetitive guest questions lead to exhaustion. We exist to fix that — so every guest feels attended to, even when the host can't be there.</p>
+    </div>
+
+    <div class="value-card">
+      <img class="value-icon" src="2simplicity.png" alt="Simplicity">
+      <h2>Simplicity</h2>
+      <p>We communicate with guests the way a great host would — warm, clear, and on time. Every response we craft feels human and builds trust, never robotic.</p>
+    </div>
+
+    <div class="value-card">
+      <img class="value-icon" src="3trainai.png" alt="Hospitality at Scale">
+      <h2>Hospitality at Scale</h2>
+      <p>Great hosting shouldn't require being glued to your phone. Train your AI once, and it handles guest conversations like a professional receptionist — knowing your property, your tone, and your rules, every time.</p>
+    </div>
+
+    <div class="value-card">
+      <img class="value-icon" src="4privacy.png" alt="Privacy by Default">
+      <h2>Privacy by Default</h2>
+      <p>Guest conversations are end-to-end encrypted via WhatsApp. We never read, store, or sell message content. Hosts trust us with their guests — we treat that as sacred.</p>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     CLOSING BANNER
+════════════════════════════════════════════════════════ -->
+<section class="closing">
+  <h2>Built by hosts, for hosts.</h2>
+  <p>We started Whatsbnb because we want to be better.</p>
+  <a href="index.html#pricing" class="btn-primary">
+    Start for free
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 12h14"/>
+      <path d="M12 5l7 7-7 7"/>
+    </svg>
+  </a>
+</section>
+
+</main>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     FOOTER
+════════════════════════════════════════════════════════ -->
+<footer>
+  <div class="f-logo">
+    <img src="Whatsbnb_logo.webp" alt="Whatsbnb" loading="lazy">
+  </div>
+  <ul class="f-links">
+    <li><a href="index.html#how">How it works</a></li>
+    <li><a href="index.html#pricing">Pricing</a></li>
+    <li><a href="#">Privacy</a></li>
+    <li><a href="core-values.html">Core Values</a></li>
+    <li><a href="#">Contact</a></li>
+  </ul>
+  <div class="f-copy">© 2026 Whatsbnb. All rights reserved.</div>
+</footer>
+
+</body>
+</html>

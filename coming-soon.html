@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Whatsbnb — Join the Waitlist</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <meta name="description" content="AI-powered WhatsApp messaging for Airbnb hosts. Instant replies. Your voice. Zero effort. Join the waitlist.">
+
+
+  <script>
+    var WEB3FORMS_KEY = "37aaf7e1-c599-445c-a368-cae9f0e36484";
+  </script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green:  #25D366;
+      --coral:  #FF5A5F;
+      --dark:   #075E54;
+      --bg:     #070f0d;
+      --bg2:    #0d1f1a;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: white;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ─── SETUP BANNER (hidden once key is set) ─────────── */
+    #setup-banner {
+      background: linear-gradient(90deg, #FFB800, #FF8C00);
+      color: #111;
+      text-align: center;
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      display: none; /* shown via JS if key not set */
+    }
+
+    #setup-banner a {
+      color: #111;
+      font-weight: 800;
+      text-decoration: underline;
+    }
+
+    /* ─── FLOATING BUBBLE BACKGROUND ───────────────────── */
+    .bubble-field {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .fbubble {
+      position: absolute;
+      bottom: -80px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 18px;
+      padding: 10px 16px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.35);
+      white-space: nowrap;
+      backdrop-filter: blur(4px);
+      animation: floatUp linear infinite;
+    }
+
+    @keyframes floatUp {
+      0%   { opacity: 0;   transform: translateY(0)   translateX(0); }
+      8%   { opacity: 1; }
+      88%  { opacity: 1; }
+      100% { opacity: 0;   transform: translateY(-105vh) translateX(var(--drift)); }
+    }
+
+    /* ─── NAV ───────────────────────────────────────────── */
+    nav {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 22px 6%;
+    }
+
+    .nav-logo {
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .nav-logo img { height: 30px; }
+
+    .nav-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: rgba(255,255,255,0.45);
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: color .2s;
+    }
+
+    .nav-back:hover { color: rgba(255,255,255,0.85); }
+
+    /* ─── HERO ──────────────────────────────────────────── */
+    #hero {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 60px 6% 80px;
+      min-height: calc(100vh - 80px);
+    }
+
+    /* Green glow behind headline */
+    .glow-bg {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -60%);
+      width: 700px;
+      height: 500px;
+      background: radial-gradient(ellipse, rgba(37,211,102,0.10) 0%, transparent 68%);
+      pointer-events: none;
+    }
+
+    /* ─── BADGE ─────────────────────────────────────────── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(37,211,102,0.1);
+      border: 1px solid rgba(37,211,102,0.25);
+      color: var(--green);
+      padding: 7px 18px;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: .3px;
+      margin-bottom: 32px;
+    }
+
+    .badge .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse-dot 2s infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%,100% { transform: scale(1); opacity: 1; }
+      50%      { transform: scale(.7); opacity: .5; }
+    }
+
+    /* ─── HEADLINE ──────────────────────────────────────── */
+    h1 {
+      font-size: clamp(40px, 6vw, 76px);
+      font-weight: 900;
+      line-height: 1.04;
+      letter-spacing: -3px;
+      margin-bottom: 22px;
+      max-width: 820px;
+    }
+
+    h1 .coral { color: var(--coral); }
+    h1 .green { color: var(--green); }
+
+    .sub {
+      font-size: clamp(16px, 2vw, 20px);
+      color: rgba(255,255,255,0.55);
+      line-height: 1.65;
+      max-width: 520px;
+      margin-bottom: 44px;
+    }
+
+    /* ─── FORM ──────────────────────────────────────────── */
+    .form-wrap {
+      width: 100%;
+      max-width: 520px;
+      margin-bottom: 16px;
+    }
+
+    #waitlist-form {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+    }
+
+    #email-input {
+      flex: 1;
+      padding: 16px 20px;
+      border-radius: 12px;
+      border: 1.5px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      color: white;
+      font-size: 16px;
+      font-family: inherit;
+      outline: none;
+      backdrop-filter: blur(8px);
+      transition: border-color .2s, background .2s;
+      min-width: 0;
+    }
+
+    #email-input::placeholder { color: rgba(255,255,255,0.3); }
+
+    #email-input:focus {
+      border-color: rgba(37,211,102,0.5);
+      background: rgba(255,255,255,0.09);
+    }
+
+    #submit-btn {
+      padding: 16px 28px;
+      background: var(--green);
+      color: #0a1f15;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 800;
+      font-family: inherit;
+      cursor: pointer;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all .2s;
+      box-shadow: 0 6px 24px rgba(37,211,102,0.3);
+      flex-shrink: 0;
+    }
+
+    #submit-btn:hover:not(:disabled) {
+      background: #20c05a;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 32px rgba(37,211,102,0.4);
+    }
+
+    #submit-btn:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    #submit-btn .spinner {
+      width: 16px; height: 16px;
+      border: 2px solid rgba(0,0,0,0.2);
+      border-top-color: #0a1f15;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      display: none;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .trust {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      color: rgba(255,255,255,0.3);
+      font-size: 13px;
+      margin-bottom: 36px;
+    }
+
+    /* ─── SUCCESS STATE ─────────────────────────────────── */
+    #success-state {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      animation: pop-in .5s ease;
+      margin-bottom: 36px;
+    }
+
+    @keyframes pop-in {
+      from { opacity: 0; transform: scale(.85) translateY(10px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .success-icon {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      background: rgba(37,211,102,0.15);
+      border: 2px solid rgba(37,211,102,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+    }
+
+    #success-state h3 {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -.5px;
+    }
+
+    #success-state p {
+      font-size: 15px;
+      color: rgba(255,255,255,.5);
+    }
+
+    /* ─── COUNTER ───────────────────────────────────────── */
+    .counter-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 15px;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 72px;
+    }
+
+    .counter-avatars {
+      display: flex;
+    }
+
+    .counter-avatars span {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      border: 2px solid var(--bg);
+      margin-left: -8px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #1a3a2e;
+    }
+
+    .counter-avatars span:first-child { margin-left: 0; }
+
+    .counter-num {
+      font-weight: 800;
+      color: var(--green);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ─── MINI FEATURES ─────────────────────────────────── */
+    .features {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 680px;
+    }
+
+    .feat {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 100px;
+      padding: 9px 18px;
+      font-size: 14px;
+      color: rgba(255,255,255,0.6);
+      backdrop-filter: blur(4px);
+    }
+
+    .feat .icon { font-size: 17px; }
+
+    /* ─── COUNTDOWN ─────────────────────────────────────── */
+    #countdown-section {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 48px 6%;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .cd-label {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+      margin-bottom: 20px;
+    }
+
+    .countdown {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .cd-unit {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .cd-num {
+      font-size: clamp(36px, 5vw, 56px);
+      font-weight: 900;
+      letter-spacing: -2px;
+      color: white;
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+      min-width: 72px;
+      text-align: center;
+    }
+
+    .cd-sep {
+      font-size: 40px;
+      font-weight: 900;
+      color: rgba(255,255,255,0.15);
+      margin-top: 4px;
+      line-height: 1;
+    }
+
+    .cd-unit-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.25);
+    }
+
+    /* ─── FOOTER ─────────────────────────────────────────── */
+    footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 28px 6%;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      color: rgba(255,255,255,0.2);
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    footer a {
+      color: rgba(255,255,255,0.35);
+      text-decoration: none;
+      transition: color .2s;
+    }
+
+    footer a:hover { color: white; }
+
+    /* ─── ADMIN PANEL ────────────────────────────────────── */
+    #admin-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      background: rgba(0,0,0,.7);
+      backdrop-filter: blur(8px);
+      align-items: center;
+      justify-content: center;
+    }
+
+    #admin-overlay.open { display: flex; }
+
+    #admin-panel {
+      background: #111a17;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
+      padding: 32px;
+      width: 90%;
+      max-width: 560px;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    #admin-panel h2 {
+      font-size: 20px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    #admin-panel h2 span { font-size: 13px; font-weight: 500; color: rgba(255,255,255,.4); }
+
+    #admin-close {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,.4);
+      font-size: 22px;
+      cursor: pointer;
+      padding: 0;
+      line-height: 1;
+      transition: color .2s;
+    }
+
+    #admin-close:hover { color: white; }
+
+    #admin-list {
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .admin-entry {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 10px;
+      padding: 11px 16px;
+      font-size: 14px;
+    }
+
+    .admin-entry .ae-email { color: white; font-weight: 500; }
+    .admin-entry .ae-time  { color: rgba(255,255,255,.35); font-size: 12px; }
+
+    .admin-empty {
+      color: rgba(255,255,255,.3);
+      text-align: center;
+      padding: 32px;
+      font-size: 15px;
+    }
+
+    .admin-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .admin-btn {
+      flex: 1;
+      padding: 11px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.05);
+      color: rgba(255,255,255,.7);
+      font-size: 13px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all .2s;
+    }
+
+    .admin-btn:hover { background: rgba(255,255,255,0.1); color: white; }
+    .admin-btn.green { background: rgba(37,211,102,0.1); border-color: rgba(37,211,102,0.2); color: var(--green); }
+    .admin-btn.green:hover { background: rgba(37,211,102,0.18); }
+
+    /* ─── RESPONSIVE ─────────────────────────────────────── */
+    @media (max-width: 560px) {
+      #waitlist-form { flex-direction: column; }
+      #submit-btn { justify-content: center; }
+      .features { gap: 10px; }
+      .feat { font-size: 13px; padding: 8px 14px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Setup warning banner -->
+<div id="setup-banner">
+  ⚠️ Email collection is not active yet.
+  <a href="https://web3forms.com" target="_blank">Get your free key at web3forms.com</a>
+  and paste it into <code>coming-soon.html</code>
+</div>
+
+
+<!-- Floating chat bubbles in background -->
+<div class="bubble-field" id="bubble-field"></div>
+
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo" id="logo-click" title="Click 5× to open admin">
+    <img src="Whatsbnb_logo.webp" alt="Whatsbnb" loading="lazy">
+  </div>
+  <a href="index.html" class="nav-back">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Back to site
+  </a>
+</nav>
+
+
+<!-- HERO -->
+<section id="hero">
+  <div class="glow-bg"></div>
+
+  <div class="badge">
+    <span class="dot"></span>
+    Early Access — Limited spots
+  </div>
+
+  <h1>
+    We reply so you<br>
+    <span class="green">don't have to...</span>
+  </h1>
+
+  <p class="sub">
+    Whatsbnb is an AI that replies to your Airbnb guests on WhatsApp —
+    instantly, 24/7, in your own voice. No more Wi-Fi password messages at midnight 😅.
+  </p>
+
+  <!-- FORM -->
+  <div class="form-wrap">
+    <form id="waitlist-form" novalidate>
+      <input
+        type="email"
+        id="email-input"
+        placeholder="your@email.com"
+        autocomplete="email"
+        required
+      >
+      <button type="submit" id="submit-btn">
+        <span class="spinner" id="spinner"></span>
+        <span id="btn-label">Join the waitlist</span>
+        <svg id="btn-arrow" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+      </button>
+    </form>
+  </div>
+
+  <!-- SUCCESS (shown after submit) -->
+  <div id="success-state">
+    <div class="success-icon">✓</div>
+    <h3>You're on the list! ❤️</h3>
+    <p>We'll email you the moment Whatsbnb opens. You'll be first.</p>
+  </div>
+
+  <div class="trust">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+    No spam. Unsubscribe anytime.
+  </div>
+
+  <!-- COUNTER -->
+  <div class="counter-row">
+    <div class="counter-avatars">
+      <span>🇫🇷</span>
+      <span>🇬🇧</span>
+      <span>🇩🇪</span>
+      <span>🇳🇱</span>
+    </div>
+    <span>
+      <span class="counter-num" id="counter-num">247</span>
+      hosts already on the waitlist
+    </span>
+  </div>
+
+  <!-- MINI FEATURES -->
+  <div class="features">
+    <div class="feat"><span class="icon">⚡</span> Replies in under 2 seconds</div>
+    <div class="feat"><span class="icon">🎭</span> Sounds exactly like you</div>
+    <div class="feat"><span class="icon">🌍</span> Any language, any timezone</div>
+    <div class="feat"><span class="icon">🔔</span> Alerts you only when needed</div>
+  </div>
+</section>
+
+
+<!-- COUNTDOWN -->
+<div id="countdown-section">
+  <div class="cd-label">Launching in</div>
+  <div class="countdown">
+    <div class="cd-unit">
+      <div class="cd-num" id="cd-days">9</div>
+      <div class="cd-unit-label">Days</div>
+    </div>
+    <div class="cd-sep">:</div>
+    <div class="cd-unit">
+      <div class="cd-num" id="cd-hours">00</div>
+      <div class="cd-unit-label">Hours</div>
+    </div>
+    <div class="cd-sep">:</div>
+    <div class="cd-unit">
+      <div class="cd-num" id="cd-mins">00</div>
+      <div class="cd-unit-label">Minutes</div>
+    </div>
+    <div class="cd-sep">:</div>
+    <div class="cd-unit">
+      <div class="cd-num" id="cd-secs">00</div>
+      <div class="cd-unit-label">Seconds</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<footer>
+  <span>© 2024 Whatsbnb</span>
+  <span>·</span>
+  <a href="index.html">Back to main site</a>
+  <span>·</span>
+  <a href="https://wa.me/37127337454" target="_blank" rel="noopener noreferrer">Contact us</a>
+</footer>
+
+<a href="https://app.netlify.com/projects/whatsbnb/deploys">
+  <img src="https://api.netlify.com/api/v1/badges/6bde7af8-a0fa-4093-aa0a-585d80bb4446/deploy-status" alt="Netlify Status" />
+</a>
+
+<!-- ADMIN PANEL -->
+<div id="admin-overlay">
+  <div id="admin-panel">
+    <h2>
+      Waitlist Signups
+      <div style="display:flex;align-items:center;gap:12px">
+        <span id="admin-count-label">0 signups</span>
+        <button id="admin-close">×</button>
+      </div>
+    </h2>
+    <div id="admin-list"></div>
+    <div class="admin-actions">
+      <button class="admin-btn green" id="copy-csv-btn">Copy as CSV</button>
+      <button class="admin-btn" id="clear-btn">Clear all</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+/* ══════════════════════════════════════════════════
+   CONFIG
+══════════════════════════════════════════════════ */
+const LAUNCH_DATE   = new Date('2026-06-15T00:00:00');
+const SEED_COUNT    = 247; // starting waitlist number shown
+const STORAGE_KEY   = 'whatsbnb_waitlist';
+const COUNT_KEY     = 'whatsbnb_count';
+
+/* ══════════════════════════════════════════════════
+   SETUP BANNER
+══════════════════════════════════════════════════ */
+if (WEB3FORMS_KEY === 'YOUR_WEB3FORMS_KEY') {
+  document.getElementById('setup-banner').style.display = 'block';
+}
+
+/* ══════════════════════════════════════════════════
+   FLOATING BUBBLES
+══════════════════════════════════════════════════ */
+(function buildBubbles() {
+  const messages = [
+    "What's the Wi-Fi password? 📶",
+    "Can I check in early? 🙏",
+    "What time is check-out?",
+    "Do you have towels? 🛁",
+    "Where can I park? 🚗",
+    "Is there shower gel? 🧴",
+    "Can I leave my luggage? 🧳",
+    "Is breakfast included? ☕",
+    "How do I get to the centre? 🗺",
+    "The key box code? 🔑",
+    "Can I check out late? ⏰",
+    "Any local restaurant tips? 🍝",
+    "Do you have hot water? 🔥",
+    "Is the pool heated? 🏊",
+    "Is the Internet fast enough for Zoom calls? 🌐",
+    "Can I do laundry? 🧺",
+    "Could you recommend a good pizzeria nearby? 🍕",
+  ];
+
+  const field = document.getElementById('bubble-field');
+
+  messages.forEach((msg, i) => {
+    const el = document.createElement('div');
+    el.className = 'fbubble';
+
+    const leftPct   = 5 + Math.random() * 82;
+    const duration  = 22 + Math.random() * 22;
+    const delay     = -(Math.random() * duration); // negative = already running
+    const drift     = (Math.random() - 0.5) * 120 + 'px';
+
+    el.style.cssText = `
+      left: ${leftPct}%;
+      --drift: ${drift};
+      animation-duration: ${duration}s;
+      animation-delay: ${delay}s;
+    `;
+    el.textContent = msg;
+    field.appendChild(el);
+  });
+})();
+
+/* ══════════════════════════════════════════════════
+   COUNTER
+══════════════════════════════════════════════════ */
+function getCount() {
+  return parseInt(localStorage.getItem(COUNT_KEY) || SEED_COUNT);
+}
+
+function setCount(n) {
+  localStorage.setItem(COUNT_KEY, n);
+}
+
+document.getElementById('counter-num').textContent = getCount().toLocaleString();
+
+/* ══════════════════════════════════════════════════
+   FORM SUBMISSION
+══════════════════════════════════════════════════ */
+const form       = document.getElementById('waitlist-form');
+const emailInput = document.getElementById('email-input');
+const submitBtn  = document.getElementById('submit-btn');
+const spinner    = document.getElementById('spinner');
+const btnLabel   = document.getElementById('btn-label');
+const btnArrow   = document.getElementById('btn-arrow');
+const successDiv = document.getElementById('success-state');
+const trustDiv   = document.querySelector('.trust');
+const counterRow = document.querySelector('.counter-row');
+
+function setLoading(on) {
+  submitBtn.disabled = on;
+  spinner.style.display = on ? 'block' : 'none';
+  btnLabel.textContent = on ? 'Joining…' : 'Join the waitlist';
+  btnArrow.style.display = on ? 'none' : 'block';
+}
+
+function saveLocally(email) {
+  const list = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  // Prevent duplicates
+  if (list.some(e => e.email === email)) return;
+  list.push({ email, timestamp: new Date().toISOString() });
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+
+  const newCount = getCount() + 1;
+  setCount(newCount);
+  document.getElementById('counter-num').textContent = newCount.toLocaleString();
+}
+
+async function sendToWeb3Forms(email) {
+  if (WEB3FORMS_KEY === 'YOUR_WEB3FORMS_KEY') return { ok: true, local_only: true };
+
+  const res = await fetch('https://api.web3forms.com/submit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify({
+      access_key:  WEB3FORMS_KEY,
+      subject:     '🏠 New Whatsbnb Waitlist Signup',
+      from_name:   'Whatsbnb Waitlist',
+      email:       email,
+      message:     `New signup: ${email}\nTime: ${new Date().toLocaleString()}`,
+    })
+  });
+  return res.json();
+}
+
+function showSuccess() {
+  form.style.display      = 'none';
+  trustDiv.style.display  = 'none';
+  successDiv.style.display = 'flex';
+}
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = emailInput.value.trim();
+
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    emailInput.style.borderColor = 'rgba(255,90,95,0.6)';
+    emailInput.focus();
+    setTimeout(() => emailInput.style.borderColor = '', 1400);
+    return;
+  }
+
+  setLoading(true);
+
+  // Always save locally first (instant, never fails)
+  saveLocally(email);
+
+  // Then try web3forms (async, non-blocking)
+  try {
+    await sendToWeb3Forms(email);
+  } catch (_) {
+    // Local save already succeeded — silent fail for remote
+  }
+
+  setLoading(false);
+  showSuccess();
+});
+
+/* ══════════════════════════════════════════════════
+   COUNTDOWN TIMER
+══════════════════════════════════════════════════ */
+function pad(n) { return String(n).padStart(2, '0'); }
+
+function tick() {
+  const diff = LAUNCH_DATE - Date.now();
+  if (diff <= 0) {
+    document.getElementById('countdown-section').style.display = 'none';
+    return;
+  }
+
+  const days  = Math.floor(diff / 864e5);
+  const hours = Math.floor((diff % 864e5) / 36e5);
+  const mins  = Math.floor((diff % 36e5)  / 6e4);
+  const secs  = Math.floor((diff % 6e4)   / 1e3);
+
+  document.getElementById('cd-days').textContent  = days;
+  document.getElementById('cd-hours').textContent = pad(hours);
+  document.getElementById('cd-mins').textContent  = pad(mins);
+  document.getElementById('cd-secs').textContent  = pad(secs);
+}
+
+tick();
+setInterval(tick, 1000);
+
+/* ══════════════════════════════════════════════════
+   ADMIN PANEL  (click logo × 5 to open)
+══════════════════════════════════════════════════ */
+let logoClicks = 0;
+let logoTimer;
+
+document.getElementById('logo-click').addEventListener('click', () => {
+  logoClicks++;
+  clearTimeout(logoTimer);
+  logoTimer = setTimeout(() => { logoClicks = 0; }, 1800);
+  if (logoClicks >= 5) {
+    logoClicks = 0;
+    openAdmin();
+  }
+});
+
+function openAdmin() {
+  const overlay  = document.getElementById('admin-overlay');
+  const listEl   = document.getElementById('admin-list');
+  const countLbl = document.getElementById('admin-count-label');
+
+  const entries = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  countLbl.textContent = `${entries.length} signup${entries.length !== 1 ? 's' : ''}`;
+
+  if (entries.length === 0) {
+    listEl.innerHTML = '<div class="admin-empty">No signups yet.<br>Share your waitlist link!</div>';
+  } else {
+    listEl.innerHTML = entries.slice().reverse().map(e => {
+      const d = new Date(e.timestamp);
+      const when = d.toLocaleDateString('en-GB', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
+      return `<div class="admin-entry">
+        <span class="ae-email">${e.email}</span>
+        <span class="ae-time">${when}</span>
+      </div>`;
+    }).join('');
+  }
+
+  overlay.classList.add('open');
+}
+
+document.getElementById('admin-close').addEventListener('click', () => {
+  document.getElementById('admin-overlay').classList.remove('open');
+});
+
+document.getElementById('admin-overlay').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('admin-overlay')) {
+    document.getElementById('admin-overlay').classList.remove('open');
+  }
+});
+
+document.getElementById('copy-csv-btn').addEventListener('click', () => {
+  const entries = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  if (!entries.length) return;
+  const csv = 'Email,Timestamp\n' + entries.map(e => `${e.email},${e.timestamp}`).join('\n');
+  navigator.clipboard.writeText(csv).then(() => {
+    const btn = document.getElementById('copy-csv-btn');
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => { btn.textContent = 'Copy as CSV'; }, 2000);
+  });
+});
+
+document.getElementById('clear-btn').addEventListener('click', () => {
+  if (!confirm('Clear all locally stored signups? (This does not affect your web3forms inbox)')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  setCount(SEED_COUNT);
+  document.getElementById('admin-overlay').classList.remove('open');
+  document.getElementById('counter-num').textContent = SEED_COUNT.toLocaleString();
+});
+</script>
+<!-- WhatsApp Floating Button -->
+<a href="https://wa.me/37127337454" target="_blank" rel="noopener noreferrer" style="
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background-color: #25D366;
+  color: white;
+  border-radius: 50px;
+  padding: 14px 20px;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  z-index: 9999;
+">
+  <!-- WhatsApp Icon -->
+  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="white">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+  </svg>
+  Chat with us
+</a>
+</body>
+</html>
