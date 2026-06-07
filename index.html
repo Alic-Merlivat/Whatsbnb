@@ -49,7 +49,7 @@
       top: 0;
       z-index: 200;
       background: rgba(255,255,255,0.97);
-      backdrop-filter: blur(12px);
+
       border-bottom: 1px solid #f0f0f0;
       padding: 0 6%;
       display: flex;
@@ -1599,7 +1599,7 @@
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry, i) => {
       if (entry.isIntersecting) {
-        setTimeout(() => entry.target.classList.add('in'), i * 90);
+        setTimeout(() => requestAnimationFrame(() => entry.target.classList.add('in')), i * 90);
         observer.unobserve(entry.target);
       }
     });
