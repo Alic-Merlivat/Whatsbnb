@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Riga Airbnb vs Fixed Rent — Revised Model</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #0f1117; color: #e0e0e0; padding: 28px; font-size: 14px; }
+  h1 { font-size: 1.3rem; color: #fff; margin-bottom: 4px; }
+  .subtitle { color: #666; font-size: 0.82rem; margin-bottom: 24px; }
+
+  .toggle-wrap { display: flex; gap: 8px; margin-bottom: 22px; flex-wrap: wrap; align-items: center; }
+  .toggle-label { color: #888; font-size: 0.78rem; margin-right: 4px; }
+  .toggle-btn { padding: 6px 16px; border-radius: 6px; border: 1px solid #2a2d3e; background: #1a1d27; color: #888; font-size: 0.78rem; cursor: pointer; }
+  .toggle-btn.active { background: #2a3050; border-color: #5599ff; color: #5599ff; }
+
+  .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 22px; }
+  @media(max-width:700px) { .kpi-row { grid-template-columns: 1fr 1fr; } }
+  .kpi { background: #1a1d27; border-radius: 10px; padding: 16px; }
+  .kpi-label { font-size: 0.72rem; color: #888; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 6px; }
+  .kpi-val { font-size: 1.6rem; font-weight: 800; line-height: 1; }
+  .kpi-sub { font-size: 0.72rem; color: #666; margin-top: 4px; }
+  .green { color: #4ecb71; } .red { color: #ff5555; } .amber { color: #ffaa33; } .blue { color: #5599ff; } .purple { color: #bb88ff; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 22px; }
+  @media(max-width:700px) { .two-col { grid-template-columns: 1fr; } }
+  .card { background: #1a1d27; border-radius: 10px; padding: 18px; }
+  .card h3 { font-size: 0.75rem; color: #888; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px; }
+
+  /* Bar chart */
+  .chart-outer { background: #1a1d27; border-radius: 10px; padding: 18px; margin-bottom: 22px; }
+  .chart-outer h3 { font-size: 0.75rem; color: #888; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px; }
+  .chart-wrap { position: relative; }
+  .chart-bars { display: flex; align-items: flex-end; gap: 6px; height: 130px; padding-bottom: 2px; }
+  .bar-col { display: flex; flex-direction: column; align-items: center; flex: 1; height: 100%; justify-content: flex-end; }
+  .bar-rect { width: 100%; border-radius: 3px 3px 0 0; min-height: 3px; position: relative; }
+  .bar-val { font-size: 0.58rem; font-weight: 700; margin-bottom: 2px; }
+  .bar-name { font-size: 0.6rem; color: #666; margin-top: 4px; }
+  .rent-marker { position: absolute; left: 0; right: 0; border-top: 2px dashed rgba(255,85,85,0.5); pointer-events: none; }
+  .rent-marker-label { position: absolute; right: 0; font-size: 0.62rem; color: #ff5555; transform: translateY(-14px); }
+
+  /* Table */
+  table { width: 100%; border-collapse: collapse; font-size: 0.76rem; }
+  th { text-align: left; color: #888; font-weight: 600; padding: 6px 8px; border-bottom: 1px solid #2a2d3e; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  td { padding: 7px 8px; border-bottom: 1px solid #1e2130; vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr.tfoot-row td { background: #1f2235; font-weight: 700; }
+
+  .season-badge { padding: 2px 7px; border-radius: 12px; font-size: 0.65rem; font-weight: 600; display: inline-block; white-space: nowrap; }
+  .s-dead { background:#1d3550;color:#5a8ab0; } .s-slow{background:#1a3525;color:#5ab070;}
+  .s-shoulder{background:#303015;color:#a0b030;} .s-high{background:#3a2810;color:#e08030;}
+  .s-peak{background:#4a1a08;color:#ff7030;}
+
+  .mini-bar { height: 6px; border-radius: 3px; background: #252830; overflow: hidden; min-width: 50px; }
+  .mini-fill { height: 100%; border-radius: 3px; }
+
+  .verdict { background: #1a1d27; border-radius: 10px; padding: 20px; margin-bottom: 22px; border-left: 4px solid #ffaa33; }
+  .verdict h3 { color: #ffaa33; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; }
+  .verdict p { line-height: 1.75; color: #ccc; font-size: 0.83rem; margin-bottom: 8px; }
+  .verdict p:last-child { margin-bottom: 0; }
+  .verdict strong { color: #fff; }
+
+  .assumptions { background: #13151f; border-radius: 10px; padding: 16px; font-size: 0.72rem; color: #666; line-height: 1.75; }
+  .assumptions strong { color: #888; }
+
+  hr.div { border: none; border-top: 1px solid #2a2d3e; margin: 10px 0; }
+
+  .info-pill { display: inline-block; background: #1a2535; color: #5599ff; font-size: 0.68rem; padding: 2px 8px; border-radius: 10px; margin-left: 6px; vertical-align: middle; }
+</style>
+</head>
+<body>
+
+<h1>Riga STR vs Fixed Rent — Revised Model</h1>
+<p class="subtitle">Base €55/night · Last-minute floor €40 · 93% proven occupancy · Hotel tax 12% · Airbnb fee 3% · No cleaning costs</p>
+
+<div class="toggle-wrap">
+  <span class="toggle-label">Scenario:</span>
+  <button class="toggle-btn active" onclick="setScenario(0)" id="btn0">Year 1 — New Listing</button>
+  <button class="toggle-btn" onclick="setScenario(1)" id="btn1">Year 2+ — Proven 93%</button>
+</div>
+
+<div id="app"></div>
+
+<script>
+const BASE = 55;
+const FLOOR = 40;
+const AIRBNB_FEE = 0.03;
+const HOTEL_TAX  = 0.12;
+const FIXED_RENT = 850;
+const FIXED_ANNUAL = FIXED_RENT * 12;
+
+// Net multiplier after fees and tax
+function net(gross) { return gross * (1 - AIRBNB_FEE - HOTEL_TAX); }
+
+/*
+  Blended avg rate model:
+  Each month has a % of nights filled at premium (event rate) vs base vs floor (last-minute).
+  floor_share = % of booked nights sold at €40 last-minute
+  event_share = % of booked nights sold at multiplier
+  base_share  = remainder at BASE
+  Blended gross = event_share*BASE*mult + base_share*BASE + floor_share*FLOOR
+*/
+
+// Year 1: new listing, depressed occupancy due to no reviews + algorithm suppression
+// Year 2+: proven 93% track record carries over
+
+const MONTHS = [
+  {
+    name:"Jun", full:"June 2026", season:"high", sc:"s-high",
+    note:"Opera Festival, Jāņi, Airshow",
+    // occ: [year1_nights, year2_nights] out of 30
+    occ:[22, 27],
+    // blended avg gross per booked night
+    // Year1: can still capture events but fewer bookings
+    // Year2: near-full, events fully captured
+    avgGross:[68, 72],
+  },
+  {
+    name:"Jul", full:"July 2026", season:"peak", sc:"s-peak",
+    note:"Peak summer, Positivus",
+    occ:[24, 28],
+    avgGross:[78, 84],
+  },
+  {
+    name:"Aug", full:"August 2026", season:"peak", sc:"s-peak",
+    note:"Peak summer, City Festival",
+    occ:[24, 28],
+    avgGross:[76, 80],
+  },
+  {
+    name:"Sep", full:"September 2026", season:"shoulder", sc:"s-shoulder",
+    note:"Tech conf, White Night",
+    occ:[18, 25],
+    avgGross:[58, 62],
+  },
+  {
+    name:"Oct", full:"October 2026", season:"shoulder", sc:"s-shoulder",
+    note:"Riga IFF, Placebo concert",
+    occ:[16, 24],
+    avgGross:[56, 60],
+  },
+  {
+    name:"Nov", full:"November 2026", season:"shoulder", sc:"s-shoulder",
+    note:"Staro Rīga, Independence Day",
+    occ:[15, 23],
+    avgGross:[57, 62],
+  },
+  {
+    name:"Dec", full:"December 2026", season:"high", sc:"s-high",
+    note:"Xmas market, NYE spike",
+    occ:[20, 26],
+    avgGross:[82, 90],
+  },
+  {
+    name:"Jan", full:"January 2027", season:"dead", sc:"s-dead",
+    note:"Dead season — floor pricing kicks in",
+    // Heavy last-minute discounting: ~50% of nights at €40, rest at BASE
+    occ:[16, 21],
+    avgGross:[46, 48],   // blended €40 floor drags avg down hard
+  },
+  {
+    name:"Feb", full:"February 2027", season:"dead", sc:"s-dead",
+    note:"Dead season — floor pricing",
+    occ:[17, 22],
+    avgGross:[46, 48],
+  },
+  {
+    name:"Mar", full:"March 2027", season:"slow", sc:"s-slow",
+    note:"Slow — startup conf minor bump",
+    occ:[18, 24],
+    avgGross:[49, 52],
+  },
+  {
+    name:"Apr", full:"April 2027", season:"shoulder", sc:"s-shoulder",
+    note:"Easter, 2ANNAS, spring ramp",
+    occ:[18, 25],
+    avgGross:[56, 60],
+  },
+  {
+    name:"May", full:"May 2027", season:"shoulder", sc:"s-shoulder",
+    note:"Riga Marathon May 16–17",
+    occ:[21, 27],
+    avgGross:[64, 70],
+  },
+];
+
+let scenario = 0;
+
+function monthNet(m, s) {
+  return net(m.avgGross[s]) * m.occ[s];
+}
+
+function render() {
+  const s = scenario;
+  const totalSTR = MONTHS.reduce((acc, m) => acc + monthNet(m, s), 0);
+  const delta = totalSTR - FIXED_ANNUAL;
+  const totalNights = MONTHS.reduce((acc, m) => acc + m.occ[s], 0);
+  const blendedNetNight = totalSTR / totalNights;
+  const occupancyPct = (totalNights / 365 * 100).toFixed(0);
+
+  // chart scaling
+  const maxRev = Math.max(...MONTHS.map(m => monthNet(m, s)), FIXED_RENT * 1.6);
+  const rentBarPct = (FIXED_RENT / maxRev) * 126; // px
+
+  const sign = delta >= 0 ? "+" : "";
+  const dColor = delta >= 0 ? "green" : "red";
+
+  document.getElementById('app').innerHTML = `
+    <!-- KPIs -->
+    <div class="kpi-row">
+      <div class="kpi">
+        <div class="kpi-label">Airbnb Annual Net</div>
+        <div class="kpi-val ${dColor}">€${Math.round(totalSTR).toLocaleString()}</div>
+        <div class="kpi-sub">After 3% fee + 12% hotel tax</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">vs Fixed Rent</div>
+        <div class="kpi-val ${dColor}">${sign}€${Math.round(Math.abs(delta)).toLocaleString()}</div>
+        <div class="kpi-sub">${delta >= 0 ? '▲ Airbnb wins' : '▼ Rent wins'}</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Occupancy</div>
+        <div class="kpi-val blue">${occupancyPct}%</div>
+        <div class="kpi-sub">${totalNights} nights / 365</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Blended Net/Night</div>
+        <div class="kpi-val purple">€${blendedNetNight.toFixed(1)}</div>
+        <div class="kpi-sub">Avg after all deductions</div>
+      </div>
+    </div>
+
+    <!-- Monthly bar chart -->
+    <div class="chart-outer">
+      <h3>Monthly Net Revenue vs €850 Rent Threshold</h3>
+      <div class="chart-wrap">
+        <div class="rent-marker" style="bottom:${rentBarPct}px;">
+          <span class="rent-marker-label">€850 rent</span>
+        </div>
+        <div class="chart-bars">
+          ${MONTHS.map(m => {
+            const rev = monthNet(m, s);
+            const barH = Math.round((rev / maxRev) * 126);
+            const col = rev >= FIXED_RENT ? '#4ecb71' : '#ff5555';
+            return `<div class="bar-col">
+              <div class="bar-val" style="color:${col}">€${Math.round(rev)}</div>
+              <div class="bar-rect" style="height:${barH}px;background:${col};opacity:0.85;"></div>
+              <div class="bar-name">${m.name}</div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+      <div style="font-size:0.66rem;color:#555;margin-top:8px;">Green = beats €850 rent · Red = below €850 rent · Dashed line = break-even threshold</div>
+    </div>
+
+    <!-- Table -->
+    <div class="card" style="margin-bottom:22px;">
+      <h3 style="margin-bottom:14px;">Month-by-Month Detail
+        <span class="info-pill">${s === 0 ? 'Year 1 — building reviews' : 'Year 2+ — 93% proven occupancy'}</span>
+      </h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Month</th>
+            <th>Season</th>
+            <th>Nights</th>
+            <th>Occ %</th>
+            <th>Avg Gross/night</th>
+            <th>Month Net</th>
+            <th>vs €850</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          ${MONTHS.map(m => {
+            const nights = m.occ[s];
+            const avgG = m.avgGross[s];
+            const mNet = monthNet(m, s);
+            const diff = mNet - FIXED_RENT;
+            const occPct = Math.round(nights / 30 * 100);
+            const col = diff >= 0 ? '#4ecb71' : '#ff5555';
+            const fillW = Math.min(100, (mNet / (FIXED_RENT * 1.8)) * 100);
+            return `<tr>
+              <td><strong>${m.full}</strong><br><span style="font-size:0.68rem;color:#555;">${m.note}</span></td>
+              <td><span class="season-badge ${m.sc}">${m.season.charAt(0).toUpperCase()+m.season.slice(1)}</span></td>
+              <td>${nights}/30</td>
+              <td style="color:${occPct>=85?'#4ecb71':occPct>=65?'#ffaa33':'#ff5555'};font-weight:700;">${occPct}%</td>
+              <td>€${avgG}</td>
+              <td><strong style="color:${col}">€${Math.round(mNet)}</strong></td>
+              <td style="color:${col};font-weight:700;">${diff>=0?'+':''}€${Math.round(diff)}</td>
+              <td style="min-width:55px;"><div class="mini-bar"><div class="mini-fill" style="width:${fillW}%;background:${col};"></div></div></td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+        <tfoot>
+          <tr class="tfoot-row">
+            <td>TOTAL</td>
+            <td>—</td>
+            <td>${totalNights}</td>
+            <td>${occupancyPct}%</td>
+            <td>—</td>
+            <td style="color:${dColor==='green'?'#4ecb71':'#ff5555'}">€${Math.round(totalSTR).toLocaleString()}</td>
+            <td style="color:${dColor==='green'?'#4ecb71':'#ff5555'}">${sign}€${Math.round(Math.abs(delta)).toLocaleString()}</td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <!-- Verdict -->
+    <div class="verdict">
+      <h3>Verdict — ${s===0?'Year 1: Cautious':'Year 2+: Clear Winner'}</h3>
+      ${s===0 ? `
+        <p><strong>Year 1 Airbnb nets ~€${Math.round(totalSTR).toLocaleString()} — ${delta>=0?`€${Math.round(delta).toLocaleString()} ahead of rent, but the margin is thin`:`€${Math.round(Math.abs(delta)).toLocaleString()} behind rent`}.</strong> New listings are suppressed by Airbnb's algorithm until you accumulate 10–20 reviews. Even with your operational experience from other rooms, this specific listing starts at zero ranking.</p>
+        <p>The <strong>€40 last-minute floor helps a lot</strong> — it's the right call and it's what lifts dead-season occupancy above what most hosts achieve. Without it, January and February would be brutal. With it, you're still generating €${Math.round(MONTHS.filter(m=>['Jan','Feb','Mar'].includes(m.name)).reduce((acc,m)=>acc+monthNet(m,0),0)).toLocaleString()} in Q1 instead of nearly nothing.</p>
+        <p>Key risk in Year 1: you miss the June Opera Festival and May Marathon at full premium because you don't have enough reviews yet for guests to trust a new listing for a special trip. Get the listing live <strong>at minimum 6 weeks before the Marathon</strong> (so by early April) to start accumulating reviews in time.</p>
+      ` : `
+        <p><strong>Year 2+ at 93% occupancy: Airbnb nets ~€${Math.round(totalSTR).toLocaleString()} — €${Math.round(delta).toLocaleString()} ahead of rent annually.</strong> That's a ${(delta/FIXED_ANNUAL*100).toFixed(0)}% premium over the fixed lease. At that point the decision is clear mathematically.</p>
+        <p>The <strong>€40 floor on slow nights is key to the model</strong>. It keeps occupancy high in Jan–Mar rather than leaving nights empty. Notice that even at €40/night net (~€33 after fees+tax), filling a night is better than nothing — your fixed costs are covered by the apartment itself, not per-night.</p>
+        <p>The months that carry the year: <strong>July, August, December</strong> alone net ~€${Math.round(['Jul','Aug','Dec'].reduce((acc,n)=>acc+monthNet(MONTHS.find(m=>m.name===n),s),0)).toLocaleString()} — that's ${((['Jul','Aug','Dec'].reduce((acc,n)=>acc+monthNet(MONTHS.find(m=>m.name===n),s),0))/totalSTR*100).toFixed(0)}% of your annual STR income in 3 months. Protect those months: no discounting in July/August, minimum 2-night stay in December, minimum 3-night NYE.</p>
+      `}
+    </div>
+
+    <div class="assumptions">
+      <strong>Model assumptions:</strong> Base €55/night, last-minute floor €40 (applied to ~45–55% of dead/slow season bookings, ~15–20% in shoulder, ~0% in peak). Blended avg gross/night accounts for event premiums and floor discounts mixed per month. Net = gross × (1 − 0.03 Airbnb fee − 0.12 hotel tax). Year 1 occupancy: 55–80% depending on season (new listing penalty). Year 2+ occupancy: 70–93% matching proven track record. 30-day months assumed throughout. No cleaning costs, platform costs, or host time valued.
+    </div>
+  `;
+}
+
+function setScenario(s) {
+  scenario = s;
+  document.querySelectorAll('.toggle-btn').forEach((b,i) => b.classList.toggle('active', i===s));
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
