@@ -1,1 +1,149 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Privacy Policy — Whatsbnb</title>
+  <meta name="description" content="How Whatsbnb collects, stores, protects, and deletes data for Airbnb hosts and their guests.">
+  <style>
+    :root { --ink:#1a1a2e; --muted:#5a5a6e; --line:#e6e6ee; --accent:#e0165b; --bg:#ffffff; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--ink);
+      font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
+    .wrap { max-width:760px; margin:0 auto; padding:56px 24px 80px; }
+    header { border-bottom:2px solid var(--line); padding-bottom:20px; margin-bottom:36px; }
+    .brand { font-weight:700; font-size:15px; letter-spacing:.02em; color:var(--accent); text-transform:uppercase; }
+    h1 { font-size:32px; line-height:1.2; margin:10px 0 6px; }
+    .meta { color:var(--muted); font-size:14px; margin:0; }
+    h2 { font-size:20px; margin:38px 0 10px; }
+    h3 { font-size:16px; margin:22px 0 6px; }
+    p, li { color:var(--ink); }
+    ul { padding-left:22px; }
+    li { margin:6px 0; }
+    a { color:var(--accent); }
+    .intro { color:var(--muted); font-size:17px; }
+    footer { margin-top:48px; padding-top:20px; border-top:1px solid var(--line); color:var(--muted); font-size:14px; }
+    code { background:#f4f4f8; padding:1px 5px; border-radius:4px; font-size:14px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">Whatsbnb</div>
+      <h1>Privacy Policy</h1>
+      <p class="meta">Last updated: 4 August 2026</p>
+    </header>
+
+    <p class="intro">Whatsbnb is an AI messaging assistant that helps Airbnb hosts answer guest
+    questions automatically, around the clock. Because our product reads and responds to messages
+    between hosts and their guests, we handle personal data with care. This policy explains what we
+    collect, why, where it lives, how we protect it, and how you can get it deleted.</p>
+
+    <h2>1. Who we are</h2>
+    <p>Whatsbnb ("we", "us", "our") provides an automated guest-messaging service to Airbnb hosts.
+    The service is operated by Whatsbnb SIA, a company registered in Latvia, at Tērbatas street 32,
+    LV-1011, Riga, Latvia. For any privacy question,
+    contact us at <a href="mailto:alic@coliving-residences.com">alic@coliving-residences.com</a>. If you are a guest
+    staying at a property managed with Whatsbnb, please note that your host is the party who decides
+    to use our service; we act as a processor on their behalf for guest conversations.</p>
+
+    <h2>2. What data we collect</h2>
+    <p>We only collect what we need to answer guest questions accurately. This includes:</p>
+    <h3>From hosts (our customers)</h3>
+    <ul>
+      <li>Account details: name, email address, and login credentials.</li>
+      <li>Listing information you provide so we can answer questions: property address,
+      check-in/check-out instructions, house rules, amenities, Wi-Fi details, local recommendations,
+      and any custom knowledge base or frequently-asked-question content you upload.</li>
+      <li>Billing information needed to process your subscription (handled by our payment processor —
+      see Section 4).</li>
+    </ul>
+    <h3>From guests (via the host's Airbnb account)</h3>
+    <p>Whatsbnb connects to your reservations either through a co-host invitation
+    (<code>cohost@whatsbnb.com</code>) or by email forwarding of Airbnb notifications. Through that
+    connection we receive:</p>
+    <ul>
+      <li>Guest messages sent through Airbnb and the replies generated or sent on the host's behalf.</li>
+      <li>Reservation details such as guest first name, stay dates, listing name, number of guests,
+      and reservation confirmation codes.</li>
+    </ul>
+    <p>We do not collect guest payment card numbers, government IDs, or full contact details beyond
+    what Airbnb shares in these messages, and we do not ask hosts to provide them.</p>
+
+    <h2>3. How we use data</h2>
+    <p>We use the data above to: generate and send accurate answers to guest questions; maintain
+    conversation history so replies stay in context; operate, secure, and improve the service; provide
+    customer support; and handle billing. We do not sell personal data, and we do not use guest
+    messages to train third-party public AI models.</p>
+
+    <h2>4. Where data is stored and who processes it</h2>
+    <p>Data is stored on Google Cloud Platform / Firebase, encrypted in transit (TLS) and at rest. To
+    deliver the service we share the minimum necessary data with a small number of subprocessors:</p>
+    <ul>
+      <li><strong>Anthropic (Claude)</strong> — guest messages and the relevant listing context are
+      sent to Anthropic's API to generate replies. Anthropic processes this data to return a response
+      and does not use API data to train its models.</li>
+      <li><strong>Google Cloud / Firebase</strong> — hosting, database, and authentication.</li>
+      <li><strong>Stripe</strong> — subscription billing. We do not store
+      full card numbers on our systems.</li>
+    </ul>
+    <p>Because we serve hosts in both the EU/EEA and the United States, data may be transferred and
+    processed in the United States. Where required, such transfers rely on Standard Contractual
+    Clauses or equivalent safeguards.</p>
+
+    <h2>5. Upcoming: WhatsApp Business support</h2>
+    <p>We are building a version of Whatsbnb that answers guest questions over WhatsApp Business, using
+    Meta's WhatsApp Business Platform. This feature is not yet live; when it launches, this policy will
+    describe it in the present tense and Meta will be listed as a subprocessor in Section 4. To be
+    accurate about what encryption does and does not cover: messages sent over WhatsApp are encrypted
+    in transit by Meta's platform, but once a message reaches Whatsbnb so we can read it and generate a
+    reply, it is decrypted and handled under this policy — including being sent to Anthropic to produce
+    a response and stored on Google Cloud / Firebase. In other words, WhatsApp/Meta encryption protects
+    messages while they travel to us; it does not by itself protect the data once we process or store it.
+    The protections in Section 6 apply to that data.</p>
+
+    <h2>6. How we protect data</h2>
+    <p>We apply encryption in transit and at rest, role-based access controls that limit who on our
+    team can view data, authenticated access to all systems, and regular review of the third parties
+    we rely on. Access to guest conversations is restricted to what is needed to operate and support
+    the service. No system is perfectly secure, but we work to keep the amount of data we hold small
+    and the safeguards around it strong.</p>
+
+    <h2>7. How long we keep data</h2>
+    <p>We retain host account and listing data for as long as your account is active. We retain guest
+    conversation and reservation data only as long as needed to provide the service and for a limited
+    period afterward for support and legal purposes, after which it is deleted or anonymized. When a
+    host closes their account, we delete or anonymize associated data within 30 days, except where we
+    are legally required to keep certain records (for example, billing records).</p>
+
+    <h2>8. Your rights and how to request deletion</h2>
+    <p>Depending on where you live, you may have the right to access, correct, export, or delete your
+    personal data, to object to or restrict certain processing, and to withdraw consent. EU/EEA
+    residents have these rights under the GDPR; California residents have comparable rights under the
+    CCPA/CPRA, including the right not to be discriminated against for exercising them.</p>
+    <p><strong>To request deletion or exercise any right, email
+    <a href="mailto:alic@coliving-residences.com">alic@coliving-residences.com</a></strong> from the address associated
+    with your account, or, if you are a guest, contact your host or email us and we will coordinate
+    with them. We respond within 30 days. Guests can also stop data collection at any time by asking
+    their host to remove Whatsbnb as a co-host or stop forwarding, which ends our access to that
+    conversation.</p>
+
+    <h2>9. Children</h2>
+    <p>Whatsbnb is not directed to children under 16 and we do not knowingly collect their data.</p>
+
+    <h2>10. Changes to this policy</h2>
+    <p>We may update this policy as the product evolves. We will post the revised version here and
+    update the "Last updated" date. Material changes affecting hosts will be communicated by email.</p>
+
+    <h2>11. Contact</h2>
+    <p>Questions or complaints: <a href="mailto:alic@coliving-residences.com">alic@coliving-residences.com</a>. EU/EEA
+    residents also have the right to lodge a complaint with their local data protection authority.</p>
+
+    <footer>
+      Whatsbnb — automated guest messaging for Airbnb hosts. This policy applies to whatsbnb.com and
+      the Whatsbnb service.
+    </footer>
+  </div>
+</body>
+</html>
