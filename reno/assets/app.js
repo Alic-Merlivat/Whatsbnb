@@ -123,9 +123,10 @@
       sec.appendChild(el("h2", null, room.name));
       if (room.story) sec.appendChild(el("p", "story", room.story));
       (room.pairs || []).forEach(function (p) { sec.appendChild(makeSlider(p)); });
-      if (room.gallery && room.gallery.length) {
+      var storyImgs = (room.gallery || []).filter(function (item) { return !item.storyHide; });
+      if (storyImgs.length) {
         sec.appendChild(el("div", "gallery-label", "&#9632; More of the finished " + room.name.toLowerCase()));
-        sec.appendChild(makeGallery(room.gallery));
+        sec.appendChild(makeGallery(storyImgs));
       }
       mount.appendChild(sec);
     });
@@ -135,9 +136,7 @@
       var sec = el("section", "room");
       sec.id = room.id;
       sec.appendChild(el("h2", null, room.name));
-      var imgs = (room.gallery || []).slice();
-      // include the "after" shots so guests see the best finished views too
-      (room.pairs || []).forEach(function (p) { imgs.unshift({ src: p.after, caption: room.name }); });
+      var imgs = (room.gallery || []).filter(function (item) { return !item.guestHide; });
       sec.appendChild(makeGallery(imgs));
       mount.appendChild(sec);
     });
