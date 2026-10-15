@@ -1,0 +1,115 @@
+{
+  "name": "Dyseurope - Gemini speech add-on (copy nodes into chat workflow)",
+  "nodes": [
+    {
+      "id": "dyseurope-prepare-speech",
+      "name": "Dyseurope - Prepare speech",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\nconst output = input.output ?? input.text;\nif (typeof output !== 'string' || !output.trim()) throw new Error('Expected the agent reply in output or text.');\nconst spokenText = output\n  .replace(/\\[([^\\]]+)\\]\\([^)]+\\)/g, '$1')\n  .replace(/^\\s{0,3}#{1,6}\\s+/gm, '')\n  .replace(/[*_\\x60]/g, '')\n  .replace(/^\\s*[-+]\\s+/gm, '')\n  .trim();\nreturn [{json: {\n  output,\n  request: {\n    model: 'gemini-3.8-flash-tts',\n    input: [{type: 'user_input', content: [{\n      type: 'text', text: spokenText,\n      annotations: [{type: 'speech_metadata', style: 'Speak in French as spoken in France. Warm, reassuring, natural conversational delivery. Clear articulation, a relaxed moderate pace, and short natural pauses between ideas. Avoid a theatrical or advertising tone. Read the transcript faithfully without adding words.'}]\n    }]}],\n    response_format: {type: 'audio', mime_type: 'audio/wav', sample_rate: 24000},\n    generation_config: {speech_config: [{voice: 'Sulafat'}]}\n  }\n}}];"
+      }
+    },
+    {
+      "id": "dyseurope-gemini-speech",
+      "name": "Dyseurope - Gemini speech",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        260,
+        0
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/interactions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googlePalmApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.request) }}",
+        "options": {
+          "timeout": 60000,
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "dyseurope-format-speech",
+      "name": "Dyseurope - Format reply",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        520,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const output = $('Dyseurope - Prepare speech').first().json.output;\nconst response = $input.first().json;\nconst parts = (Array.isArray(response.steps) ? response.steps : [])\n  .filter(step => step.type === 'model_output')\n  .flatMap(step => Array.isArray(step.content) ? step.content : []);\nconst audio = parts.filter(part => part.type === 'audio' && typeof part.data === 'string').at(-1);\nif (!audio || audio.data.length > 16000000 || !/^[A-Za-z0-9+/]+={0,2}$/.test(audio.data)) {\n  return [{json: {output, audio: null}}];\n}\nconst wav = Buffer.from(audio.data, 'base64');\nif (wav.length < 44 || wav.toString('ascii', 0, 4) !== 'RIFF' || wav.toString('ascii', 8, 12) !== 'WAVE') {\n  return [{json: {output, audio: null}}];\n}\nreturn [{json: {output, audio: {mimeType: 'audio/wav', data: audio.data}}}];"
+      }
+    },
+    {
+      "id": "dyseurope-send-reply",
+      "name": "Dyseurope - Send reply",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        780,
+        0
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "Dyseurope - Prepare speech": {
+      "main": [
+        [
+          {
+            "node": "Dyseurope - Gemini speech",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dyseurope - Gemini speech": {
+      "main": [
+        [
+          {
+            "node": "Dyseurope - Format reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dyseurope - Format reply": {
+      "main": [
+        [
+          {
+            "node": "Dyseurope - Send reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "tags": []
+}
