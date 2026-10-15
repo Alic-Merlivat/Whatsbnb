@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#741c38">
+  <meta name="description" content="Échangez avec l’assistant Dyseurope par écrit ou à la voix, en français.">
+  <title>Dyseurope · Une voix pour vous accompagner</title>
+  <style>
+    :root { color-scheme: light; --wine: #741c38; --dark: #481327; --ink: #35232b; --muted: #705c65; --line: #e7d9dc; --cream: #faf6f2; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--cream); color: var(--ink); font: 18px/1.65 Arial, sans-serif; }
+    button, textarea, input { font: inherit; }
+    button { cursor: pointer; }
+    button:disabled { cursor: default; opacity: .5; }
+    :focus-visible { outline: 3px solid #b85b16; outline-offset: 4px; }
+    .page { max-width: 820px; margin: auto; padding: 32px 24px 48px; }
+    .brand { display: flex; align-items: center; gap: 12px; color: var(--wine); font-size: 24px; font-weight: 700; letter-spacing: -.6px; }
+    .brand-mark { display: grid; place-items: center; width: 38px; height: 38px; background: var(--wine); color: white; border-radius: 50% 50% 12px 50%; font-size: 22px; }
+    .eyebrow { margin: 40px 0 12px; color: var(--wine); font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
+    h1 { margin: 0; color: var(--dark); font-size: clamp(30px, 5vw, 44px); line-height: 1.2; letter-spacing: -1px; }
+    .intro { max-width: 580px; margin: 18px auto 28px; color: var(--muted); }
+    .heading { text-align: center; }
+    .chat { background: #fff; border: 1px solid var(--line); border-radius: 24px; box-shadow: 0 16px 50px #48132709; overflow: hidden; }
+    .chat-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 24px; border-bottom: 1px solid var(--line); }
+    .chat-top strong { font-size: 16px; }
+    .tag { color: var(--muted); font-size: 13px; }
+    .voice-area { text-align: center; padding: 28px 24px 16px; background: linear-gradient(#fff, #fdf9fa); }
+    .mic { display: inline-grid; place-items: center; width: 78px; height: 78px; border: 8px solid #f1e3e8; border-radius: 50%; background: var(--wine); color: #fff; box-shadow: 0 0 0 1px #ead4dc; }
+    .mic[aria-pressed="true"] { background: #b12e4e; box-shadow: 0 0 0 6px #f1e3e8; }
+    .mic svg { width: 28px; height: 28px; }
+    .voice-area p { margin: 12px 0 0; font-size: 15px; color: var(--muted); }
+    .messages { height: 290px; overflow-y: auto; padding: 20px 24px; overscroll-behavior: contain; }
+    .message { margin-bottom: 20px; max-width: 92%; }
+    .message.user { margin-left: auto; }
+    .speaker { display: block; font-size: 12px; font-weight: 700; letter-spacing: .5px; margin-bottom: 5px; color: var(--muted); }
+    .bubble { margin: 0; padding: 14px 18px; border-radius: 3px 16px 16px; background: #f6eff2; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .user .bubble { background: var(--wine); color: white; border-radius: 16px 3px 16px 16px; }
+    .replay { border: 0; background: transparent; color: var(--wine); padding: 8px 2px; font-size: 14px; }
+    .composer { border-top: 1px solid var(--line); padding: 20px 24px 16px; }
+    label[for="message"] { display: block; font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+    .input-row { display: flex; align-items: flex-end; gap: 10px; }
+    textarea { width: 100%; resize: vertical; min-height: 60px; max-height: 190px; border: 1px solid #bca7b0; border-radius: 12px; padding: 12px; color: var(--ink); background: #fff; line-height: 1.5; }
+    .send { border: 0; border-radius: 12px; background: var(--wine); color: white; padding: 15px 18px; min-height: 60px; }
+    .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; margin-top: 12px; font-size: 14px; }
+    .controls label { display: flex; align-items: center; gap: 8px; }
+    input[type="checkbox"] { accent-color: var(--wine); width: 18px; height: 18px; }
+    .stop { border: 0; background: transparent; color: var(--wine); padding: 8px 0; min-height: 44px; }
+    .status { margin: 0; padding: 0 24px 16px; min-height: 40px; color: var(--muted); font-size: 14px; }
+    .status.error { color: #9c1635; }
+    .note { margin: 18px auto 0; max-width: 650px; text-align: center; color: var(--muted); font-size: 13px; }
+    @media (max-width: 540px) {
+      .page { padding: 20px 12px 28px; }
+      .eyebrow { margin-top: 28px; }
+      .intro { font-size: 16px; }
+      .chat-top, .composer, .messages { padding-left: 16px; padding-right: 16px; }
+      .input-row { flex-wrap: wrap; }
+      .send { width: 100%; min-height: 48px; padding: 10px; }
+      .message { max-width: 100%; }
+      .chat-top { align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">d</span>dyseurope</div>
+    <header class="heading">
+      <p class="eyebrow">Votre assistant, à votre rythme</p>
+      <h1>Une voix pour<br>vous accompagner.</h1>
+      <p class="intro">Une question sur la dyslexie ou les troubles dys ?<br>Parlons-en simplement, à l’oral ou par écrit.</p>
+    </header>
+    <section class="chat" aria-label="Conversation avec Dyseurope">
+      <div class="chat-top"><strong>Assistant Dyseurope</strong><span class="tag">En français · Voix & texte</span></div>
+      <div class="voice-area">
+        <button class="mic" id="mic" type="button" aria-label="Dicter un message en français" aria-pressed="false" aria-describedby="mic-help">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3M8 22h8"/></svg>
+        </button>
+        <p id="mic-help">Touchez le micro, puis parlez. Relisez avant d’envoyer.</p>
+      </div>
+      <div class="messages" id="messages" role="log" aria-label="Messages" aria-live="polite" aria-relevant="additions" tabindex="0">
+        <div class="message"><span class="speaker">DYSEUROPE</span><p class="bubble">Bonjour ! Je suis l’assistant Dyseurope. Vous pouvez m’écrire ou dicter votre question. Comment puis-je vous aider ?</p></div>
+      </div>
+      <form class="composer" id="form">
+        <label for="message">Votre message</label>
+        <div class="input-row">
+          <textarea id="message" name="message" rows="2" maxlength="4000" placeholder="Écrivez votre question ici…" required aria-describedby="input-help"></textarea>
+          <button class="send" id="send" type="submit">Envoyer ↗</button>
+        </div>
+        <div class="controls">
+          <label><input id="voice" type="checkbox" checked>Lire les réponses à voix haute</label>
+          <button class="stop" id="stop" type="button">Arrêter la lecture</button>
+        </div>
+        <span id="input-help" class="tag">Entrée : envoyer · Maj + Entrée : nouvelle ligne</span>
+      </form>
+      <p class="status" id="status" role="status" aria-live="polite">Prêt à vous écouter ou à vous lire.</p>
+    </section>
+    <p class="note">Vos messages sont transmis à l’assistant via n8n. Selon votre navigateur, la dictée peut utiliser un service vocal externe. L’assistant peut se tromper ; ses réponses ne remplacent pas l’avis d’un professionnel.</p>
+  </main>
+  <script>
+    'use strict';
+    // n8n Embedded Chat: keep Gemini credentials and model configuration in the workflow.
+    const WEBHOOK = 'https://strelitzia.app.n8n.cloud/webhook/d7b84e8a-68d0-42b9-882a-3a32dedbb7b2/chat';
+    const $ = (id) => document.getElementById(id);
+    const input = $('message');
+    const mic = $('mic');
+    const log = $('messages');
+    const synth = window.speechSynthesis;
+    const canSpeak = Boolean(synth && window.SpeechSynthesisUtterance);
+    let busy = false;
+    let listening = false;
+    let recognition;
+    let activeUtterance;
+    let sessionId = crypto.randomUUID();
+    // Store only the session identifier; the transcript stays in this page's memory.
+    try {
+      sessionId = sessionStorage.getItem('dyseurope-chat-session') || sessionId;
+      sessionStorage.setItem('dyseurope-chat-session', sessionId);
+    } catch { /* Chat still works when storage is blocked. */ }
+
+    function status(text, error = false) {
+      $('status').textContent = text;
+      $('status').classList.toggle('error', error);
+    }
+
+    function stopSpeaking() {
+      if (canSpeak) synth.cancel();
+      activeUtterance = null;
+    }
+
+    function speak(text) {
+      if (!canSpeak) return;
+      stopSpeaking();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'fr-FR';
+      const french = synth.getVoices().find((voice) => /^fr[-_]/i.test(voice.lang));
+      if (french) utterance.voice = french;
+      utterance.rate = 0.95;
+      utterance.onerror = (event) => {
+        if (event.error !== 'canceled' && event.error !== 'interrupted') {
+          status('Lecture indisponible. Utilisez « Écouter la réponse » ou lisez le texte.');
+        }
+      };
+      activeUtterance = utterance;
+      synth.speak(utterance);
+    }
+
+    function addMessage(text, role) {
+      const item = document.createElement('div');
+      item.className = 'message ' + role;
+      const name = document.createElement('span');
+      name.className = 'speaker';
+      name.textContent = role === 'user' ? 'VOUS' : 'DYSEUROPE';
+      const bubble = document.createElement('p');
+      bubble.className = 'bubble';
+      // Treat all user and workflow content as text, never executable HTML.
+      bubble.textContent = text;
+      item.append(name, bubble);
+      if (role === 'assistant' && canSpeak) {
+        const replay = document.createElement('button');
+        replay.type = 'button';
+        replay.className = 'replay';
+        replay.textContent = 'Écouter la réponse';
+        replay.addEventListener('click', () => {
+          if (listening) recognition.abort();
+          speak(text);
+        });
+        item.append(replay);
+      }
+      log.append(item);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    function responseText(data) {
+      if (Array.isArray(data)) data = data[0];
+      const text = typeof data === 'string' ? data : data?.output ?? data?.text;
+      if (typeof text !== 'string' || !text.trim()) throw new Error('invalid-response');
+      return text.trim();
+    }
+
+    async function sendMessage(event) {
+      event.preventDefault();
+      const text = input.value.trim();
+      if (busy || listening || !text) return;
+      busy = true;
+      $('send').disabled = true;
+      mic.disabled = true;
+      input.disabled = true;
+      log.setAttribute('aria-busy', 'true');
+      stopSpeaking();
+      addMessage(text, 'user');
+      input.value = '';
+      status('Dyseurope prépare sa réponse…');
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 60000);
+      try {
+        const response = await fetch(WEBHOOK, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'sendMessage', sessionId, chatInput: text }),
+          signal: controller.signal,
+          credentials: 'omit'
+        });
+        if (!response.ok) throw new Error('http-' + response.status);
+        const raw = await response.text();
+        let data;
+        try { data = JSON.parse(raw); }
+        catch {
+          if (!(response.headers.get('content-type') || '').startsWith('text/plain')) throw new Error('invalid-response');
+          data = raw;
+        }
+        const answer = responseText(data);
+        addMessage(answer, 'assistant');
+        status('Réponse reçue. Vous pouvez poser une autre question.');
+        if ($('voice').checked) speak(answer);
+      } catch (error) {
+        input.value = text;
+        status(error.name === 'AbortError'
+          ? 'Le délai de réponse est dépassé. Votre message est conservé ; vous pouvez réessayer.'
+          : 'La réponse est indisponible. Vérifiez votre connexion puis réessayez. Votre message est conservé.', true);
+      } finally {
+        clearTimeout(timeout);
+        busy = false;
+        $('send').disabled = false;
+        mic.disabled = !recognition;
+        input.disabled = false;
+        log.setAttribute('aria-busy', 'false');
+        input.focus();
+      }
+    }
+
+    $('form').addEventListener('submit', sendMessage);
+    input.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' && !event.shiftKey && !event.isComposing) {
+        event.preventDefault();
+        $('form').requestSubmit();
+      }
+    });
+    $('stop').addEventListener('click', stopSpeaking);
+    $('voice').addEventListener('change', () => { if (!$('voice').checked) stopSpeaking(); });
+    if (!canSpeak) {
+      $('voice').checked = false;
+      $('voice').disabled = true;
+      $('stop').disabled = true;
+      status('La lecture vocale est indisponible dans ce navigateur. Les réponses restent lisibles.');
+    }
+
+    const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (Recognition && window.isSecureContext) {
+      recognition = new Recognition();
+      recognition.lang = 'fr-FR';
+      recognition.continuous = false;
+      recognition.interimResults = true;
+      let draft = '';
+      let failed = false;
+      recognition.onstart = () => {
+        listening = true;
+        mic.setAttribute('aria-pressed', 'true');
+        mic.setAttribute('aria-label', 'Terminer la dictée');
+        $('send').disabled = true;
+        input.disabled = true;
+        status('Je vous écoute… Touchez à nouveau le micro pour terminer.');
+      };
+      recognition.onresult = (event) => {
+        const transcript = Array.from(event.results, (result) => result[0].transcript).join(' ');
+        input.value = (draft + (draft ? ' ' : '') + transcript).slice(0, 4000);
+      };
+      recognition.onerror = (event) => {
+        failed = true;
+        const errors = {
+          'not-allowed': 'Accès au micro refusé. Autorisez-le dans votre navigateur ou écrivez votre message.',
+          'service-not-allowed': 'Le service de dictée est indisponible. Vous pouvez écrire votre message.',
+          'audio-capture': 'Aucun micro disponible. Vérifiez son branchement ou écrivez votre message.',
+          'no-speech': 'Aucune parole détectée. Réessayez ou écrivez votre message.',
+          'network': 'La dictée nécessite une connexion. Vous pouvez écrire votre message.'
+        };
+        if (event.error !== 'aborted') status(errors[event.error] || 'La dictée a été interrompue. Vous pouvez écrire votre message.', true);
+      };
+      recognition.onend = () => {
+        listening = false;
+        mic.setAttribute('aria-pressed', 'false');
+        mic.setAttribute('aria-label', 'Dicter un message en français');
+        $('send').disabled = busy;
+        input.disabled = busy;
+        if (!failed && !busy) status('Relisez votre message, puis sélectionnez Envoyer.');
+        if (!busy) input.focus();
+      };
+      mic.addEventListener('click', () => {
+        if (busy) return;
+        if (listening) { recognition.stop(); return; }
+        stopSpeaking();
+        draft = input.value.trim();
+        failed = false;
+        try { recognition.start(); }
+        catch { status('Le micro ne peut pas démarrer. Réessayez ou écrivez votre message.', true); }
+      });
+    } else {
+      mic.disabled = true;
+      $('mic-help').textContent = 'Dictée indisponible ici. Utilisez un navigateur compatible en HTTPS, ou écrivez ci-dessous.';
+    }
+    window.addEventListener('pagehide', () => {
+      if (recognition) recognition.abort();
+      stopSpeaking();
+    });
+  </script>
+</body>
+</html>
