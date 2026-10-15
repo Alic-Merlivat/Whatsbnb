@@ -1,6 +1,6 @@
 # Connect Gemini speech to Dyseurope
 
-The page is ready to play Gemini WAV audio returned by the existing chat webhook. The live n8n workflow still needs the speech nodes connected and a Gemini credential selected. No key belongs in the HTML or this repository.
+The page is ready to play Gemini WAV audio returned by the existing chat webhook. The speech integration is connected and tested in the unpublished [Dyseurope - Gemini voice test](https://strelitzia.app.n8n.cloud/workflow/gqIthLV7gufoqz8i) workflow, using the existing Google credential. The production workflow remains unchanged pending review. No key belongs in the HTML or this repository.
 
 ## Set up n8n
 
@@ -30,6 +30,10 @@ The speech transcript removes simple Markdown formatting and retains link labels
 
 ## Validation status
 
-Local mocked checks cover payload compatibility, WAV handling, autoplay rejection, replay, stop/mute, stale playback, URL cleanup, and speech-node response formatting. Live Gemini generation and listening quality must be checked using the selected n8n credential. No live n8n workflow has been changed by preparing these files.
+Local mocked checks pass for payload compatibility, WAV handling, autoplay rejection, replay, stop/mute, stale playback, URL cleanup, and speech-node response formatting.
+
+On 15 October 2026, the test workflow completed a French chat request through the agent, speech preparation, Gemini speech, formatting, and response nodes in 9.384 seconds. The formatter returned the original French answer plus base64 audio with MIME type audio/wav and a valid RIFF/WAVE header. A separate speech-only request also completed successfully. Both used the existing Google Gemini(PaLM) Api credential; no key was exported.
+
+The test copy is unpublished. The original production workflow and index.html were not changed. Audible quality and playback in the deployed website still need review; the workflow test proves audio generation and response formatting, not browser playback.
 
 Official references: [Gemini speech generation and voice options](https://ai.google.dev/gemini-api/docs/speech-generation), [n8n Chat Trigger response modes](https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-langchain.chattrigger/).
