@@ -106,10 +106,14 @@
     const log = $('messages');
     const synth = window.speechSynthesis;
     const canSpeak = Boolean(synth && window.SpeechSynthesisUtterance);
+    const canPlayAudio = typeof window.Audio === 'function';
     let busy = false;
     let listening = false;
     let recognition;
     let activeUtterance;
+    let activeAudio;
+    let activeAudioUrl;
+    let playbackVersion = 0;
     let sessionId = crypto.randomUUID();
     // Store only the session identifier; the transcript stays in this page's memory.
     try {
@@ -123,19 +127,70 @@
     }
 
     function stopSpeaking() {
+      playbackVersion += 1;
+      if (activeAudio) {
+        activeAudio.pause();
+        activeAudio.removeAttribute('src');
+        activeAudio.load();
+        activeAudio = null;
+      }
+      if (activeAudioUrl) URL.revokeObjectURL(activeAudioUrl);
+      activeAudioUrl = null;
       if (canSpeak) synth.cancel();
       activeUtterance = null;
     }
 
-    function speak(text) {
-      if (!canSpeak) return;
+    function geminiAudioBlob(audio) {
+      // The workflow returns a complete WAV, never headerless Gemini PCM.
+      if (audio?.mimeType !== 'audio/wav' || typeof audio.data !== 'string' ||
+          audio.data.length > 16000000 || !/^[A-Za-z0-9+/]+={0,2}$/.test(audio.data)) {
+        throw new Error('invalid-audio');
+      }
+      const raw = atob(audio.data);
+      if (raw.length < 44 || raw.slice(0, 4) !== 'RIFF' || raw.slice(8, 12) !== 'WAVE') {
+        throw new Error('invalid-wav');
+      }
+      return new Blob([Uint8Array.from(raw, (character) => character.charCodeAt(0))], { type: 'audio/wav' });
+    }
+
+    async function speak(text, audio) {
       stopSpeaking();
+      const version = playbackVersion;
+      if (audio && canPlayAudio) {
+        try {
+          const blob = geminiAudioBlob(audio);
+          activeAudioUrl = URL.createObjectURL(blob);
+          const player = new Audio(activeAudioUrl);
+          activeAudio = player;
+          player.onended = () => { if (activeAudio === player) stopSpeaking(); };
+          player.onerror = () => {
+            if (version !== playbackVersion) return;
+            stopSpeaking();
+            status('Lecture audio indisponible. Le texte de la réponse reste disponible.');
+          };
+          await player.play();
+        } catch (error) {
+          if (version !== playbackVersion) return;
+          stopSpeaking();
+          status(error.name === 'NotAllowedError'
+            ? 'Sélectionnez « Écouter la réponse » pour lancer la lecture.'
+            : 'Lecture audio indisponible. Le texte de la réponse reste disponible.');
+        }
+        return;
+      }
+      // Keep the existing voice working during the n8n migration or a TTS failure.
+      if (!canSpeak) {
+        status('Lecture vocale indisponible. Le texte de la réponse reste disponible.');
+        return;
+      }
+      status('Lecture avec la voix de votre appareil.');
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'fr-FR';
       const french = synth.getVoices().find((voice) => /^fr[-_]/i.test(voice.lang));
       if (french) utterance.voice = french;
       utterance.rate = 0.95;
       utterance.onerror = (event) => {
+        if (version !== playbackVersion) return;
         if (event.error !== 'canceled' && event.error !== 'interrupted') {
           status('Lecture indisponible. Utilisez « Écouter la réponse » ou lisez le texte.');
         }
@@ -144,7 +199,7 @@
       synth.speak(utterance);
     }
 
-    function addMessage(text, role) {
+    function addMessage(text, role, audio) {
       const item = document.createElement('div');
       item.className = 'message ' + role;
       const name = document.createElement('span');
@@ -155,14 +210,14 @@
       // Treat all user and workflow content as text, never executable HTML.
       bubble.textContent = text;
       item.append(name, bubble);
-      if (role === 'assistant' && canSpeak) {
+      if (role === 'assistant' && (canSpeak || (canPlayAudio && audio))) {
         const replay = document.createElement('button');
         replay.type = 'button';
         replay.className = 'replay';
         replay.textContent = 'Écouter la réponse';
         replay.addEventListener('click', () => {
           if (listening) recognition.abort();
-          speak(text);
+          speak(text, audio);
         });
         item.append(replay);
       }
@@ -187,11 +242,12 @@
       input.disabled = true;
       log.setAttribute('aria-busy', 'true');
       stopSpeaking();
+      const replyPlaybackVersion = playbackVersion;
       addMessage(text, 'user');
       input.value = '';
       status('Dyseurope prépare sa réponse…');
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 60000);
+      const timeout = setTimeout(() => controller.abort(), 90000);
       try {
         const response = await fetch(WEBHOOK, {
           method: 'POST',
@@ -209,9 +265,11 @@
           data = raw;
         }
         const answer = responseText(data);
-        addMessage(answer, 'assistant');
+        const payload = Array.isArray(data) ? data[0] : data;
+        const audio = payload && typeof payload === 'object' ? payload.audio : null;
+        addMessage(answer, 'assistant', audio);
         status('Réponse reçue. Vous pouvez poser une autre question.');
-        if ($('voice').checked) speak(answer);
+        if ($('voice').checked && replyPlaybackVersion === playbackVersion) speak(answer, audio);
       } catch (error) {
         input.value = text;
         status(error.name === 'AbortError'
@@ -237,7 +295,7 @@
     });
     $('stop').addEventListener('click', stopSpeaking);
     $('voice').addEventListener('change', () => { if (!$('voice').checked) stopSpeaking(); });
-    if (!canSpeak) {
+    if (!canSpeak && !canPlayAudio) {
       $('voice').checked = false;
       $('voice').disabled = true;
       $('stop').disabled = true;
