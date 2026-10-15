@@ -7,93 +7,92 @@
   <meta name="description" content="Échangez avec l’assistant Dyseurope par écrit ou à la voix, en français.">
   <title>Dyseurope · Une voix pour vous accompagner</title>
   <style>
-    :root { color-scheme: light; --wine: #741c38; --dark: #481327; --ink: #35232b; --muted: #705c65; --line: #e7d9dc; --cream: #faf6f2; }
+    :root { color-scheme: light; --wine: #741c38; --dark: #481327; --ink: #35232b; --muted: #79676e; --line: #e7d9dc; --cream: #faf6f2; }
     * { box-sizing: border-box; }
-    body { margin: 0; background: var(--cream); color: var(--ink); font: 18px/1.65 Arial, sans-serif; }
+    body { margin: 0; background: #f3ede8; color: var(--ink); font: 17px/1.55 Arial, sans-serif; }
     button, textarea, input { font: inherit; }
-    button { cursor: pointer; }
-    button:disabled { cursor: default; opacity: .5; }
-    :focus-visible { outline: 3px solid #b85b16; outline-offset: 4px; }
-    .page { max-width: 820px; margin: auto; padding: 32px 24px 48px; }
-    .brand { display: flex; align-items: center; gap: 12px; color: var(--wine); font-size: 24px; font-weight: 700; letter-spacing: -.6px; }
-    .brand-mark { display: grid; place-items: center; width: 38px; height: 38px; background: var(--wine); color: white; border-radius: 50% 50% 12px 50%; font-size: 22px; }
-    .eyebrow { margin: 40px 0 12px; color: var(--wine); font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
-    h1 { margin: 0; color: var(--dark); font-size: clamp(30px, 5vw, 44px); line-height: 1.2; letter-spacing: -1px; }
-    .intro { max-width: 580px; margin: 18px auto 28px; color: var(--muted); }
-    .heading { text-align: center; }
-    .chat { background: #fff; border: 1px solid var(--line); border-radius: 24px; box-shadow: 0 16px 50px #48132709; overflow: hidden; }
-    .chat-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 24px; border-bottom: 1px solid var(--line); }
-    .chat-top strong { font-size: 16px; }
-    .tag { color: var(--muted); font-size: 13px; }
-    .voice-area { text-align: center; padding: 28px 24px 16px; background: linear-gradient(#fff, #fdf9fa); }
-    .mic { display: inline-grid; place-items: center; width: 78px; height: 78px; border: 8px solid #f1e3e8; border-radius: 50%; background: var(--wine); color: #fff; box-shadow: 0 0 0 1px #ead4dc; }
-    .mic[aria-pressed="true"] { background: #b12e4e; box-shadow: 0 0 0 6px #f1e3e8; }
-    .mic svg { width: 28px; height: 28px; }
-    .voice-area p { margin: 12px 0 0; font-size: 15px; color: var(--muted); }
-    .messages { height: 290px; overflow-y: auto; padding: 20px 24px; overscroll-behavior: contain; }
-    .message { margin-bottom: 20px; max-width: 92%; }
+    button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    button:disabled { cursor: default; opacity: .45; }
+    :focus-visible { outline: 3px solid #ba7b37; outline-offset: 3px; }
+    .page { min-height: 100svh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px 20px 20px; }
+    .phone { width: min(100%, 440px); padding: 9px; background: #211b1e; border: 2px solid #8b8286; border-radius: 56px; box-shadow: 0 22px 65px #48263820, inset 0 0 0 2px #080608; }
+    .chat { height: min(820px, calc(100svh - 124px)); min-height: 570px; display: flex; flex-direction: column; background: var(--cream); border-radius: 45px; overflow: hidden; }
+    .phone-top { height: 43px; flex-shrink: 0; position: relative; background: var(--wine); }
+    .island { position: absolute; width: 112px; height: 27px; background: #211b1e; border-radius: 20px; left: 50%; top: 8px; transform: translateX(-50%); }
+    .chat-top { display: flex; align-items: center; gap: 14px; padding: 12px 24px 22px; background: var(--wine); color: #fff; }
+    .brand-mark { display: grid; place-items: center; width: 51px; height: 51px; flex-shrink: 0; background: var(--cream); color: var(--wine); border-radius: 50%; font: 45px/1 Georgia, serif; }
+    h1 { margin: 0; color: white; font-size: 25px; line-height: 1.25; letter-spacing: -.6px; }
+    .tag { font-size: 13px; color: var(--muted); }
+    .chat-top .tag { color: #f2dfe5; font-size: 14px; }
+    .messages { flex: 1; min-height: 0; overflow-y: auto; padding: 26px 18px 12px; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: #d9c2cb transparent; }
+    .message { margin-bottom: 19px; max-width: 89%; }
     .message.user { margin-left: auto; }
-    .speaker { display: block; font-size: 12px; font-weight: 700; letter-spacing: .5px; margin-bottom: 5px; color: var(--muted); }
-    .bubble { margin: 0; padding: 14px 18px; border-radius: 3px 16px 16px; background: #f6eff2; white-space: pre-wrap; overflow-wrap: anywhere; }
-    .user .bubble { background: var(--wine); color: white; border-radius: 16px 3px 16px 16px; }
-    .replay { border: 0; background: transparent; color: var(--wine); padding: 8px 2px; font-size: 14px; }
-    .composer { border-top: 1px solid var(--line); padding: 20px 24px 16px; }
-    label[for="message"] { display: block; font-size: 14px; font-weight: 700; margin-bottom: 8px; }
-    .input-row { display: flex; align-items: flex-end; gap: 10px; }
-    textarea { width: 100%; resize: vertical; min-height: 60px; max-height: 190px; border: 1px solid #bca7b0; border-radius: 12px; padding: 12px; color: var(--ink); background: #fff; line-height: 1.5; }
-    .send { border: 0; border-radius: 12px; background: var(--wine); color: white; padding: 15px 18px; min-height: 60px; }
-    .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; margin-top: 12px; font-size: 14px; }
-    .controls label { display: flex; align-items: center; gap: 8px; }
-    input[type="checkbox"] { accent-color: var(--wine); width: 18px; height: 18px; }
-    .stop { border: 0; background: transparent; color: var(--wine); padding: 8px 0; min-height: 44px; }
-    .status { margin: 0; padding: 0 24px 16px; min-height: 40px; color: var(--muted); font-size: 14px; }
+    .speaker { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    .bubble { margin: 0; padding: 14px 17px; border: 1px solid #efe7e8; border-radius: 20px 20px 20px 5px; background: #fff; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .user .bubble { background: var(--wine); color: #fff; border-color: var(--wine); border-radius: 20px 20px 5px 20px; }
+    .replay { border: 0; border-radius: 22px; background: #f0e1e6; color: var(--wine); padding: 9px 14px; margin-top: 7px; font-size: 13px; min-height: 40px; }
+    .composer { flex-shrink: 0; background: #fffaf8; border-top: 1px solid #eee2e5; border-radius: 26px 26px 0 0; padding: 14px 13px 4px; }
+    label[for="message"], #input-help { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+    .input-row { display: flex; align-items: flex-end; gap: 8px; }
+    textarea { display: block; flex: 1; min-width: 0; width: 100%; resize: none; height: 50px; min-height: 50px; max-height: 110px; border: 1px solid #decbd2; border-radius: 25px; padding: 12px 15px; color: var(--ink); background: #fff; line-height: 24px; font-size: 16px; }
+    textarea::placeholder { color: #8d7d83; }
+    .mic, .send { display: grid; place-items: center; flex: 0 0 48px; width: 48px; height: 50px; border-radius: 50%; padding: 0; }
+    .mic { border: 1px solid #dec2cc; background: transparent; color: var(--wine); }
+    .mic[aria-pressed="true"] { background: var(--wine); color: white; box-shadow: 0 0 0 3px #ead4dc; }
+    .mic svg, .send svg { width: 23px; height: 23px; }
+    .send { border: 0; background: var(--wine); color: white; }
+    .controls { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin: 8px 5px 0; font-size: 12px; }
+    .controls label { display: flex; align-items: center; gap: 6px; min-height: 32px; }
+    input[type="checkbox"] { accent-color: var(--wine); width: 16px; height: 16px; margin: 0; }
+    .stop { border: 0; background: transparent; color: var(--wine); padding: 6px 0; min-height: 32px; font-size: 12px; }
+    .status { flex-shrink: 0; margin: 0; padding: 4px 20px 10px; background: #fffaf8; min-height: 34px; color: var(--muted); font-size: 11px; text-align: center; }
     .status.error { color: #9c1635; }
-    .note { margin: 18px auto 0; max-width: 650px; text-align: center; color: var(--muted); font-size: 13px; }
-    @media (max-width: 540px) {
-      .page { padding: 20px 12px 28px; }
-      .eyebrow { margin-top: 28px; }
-      .intro { font-size: 16px; }
-      .chat-top, .composer, .messages { padding-left: 16px; padding-right: 16px; }
-      .input-row { flex-wrap: wrap; }
-      .send { width: 100%; min-height: 48px; padding: 10px; }
-      .message { max-width: 100%; }
-      .chat-top { align-items: flex-start; }
+    .home-indicator { flex-shrink: 0; height: 17px; background: #fffaf8; position: relative; }
+    .home-indicator::after { content: ''; position: absolute; width: 102px; height: 4px; border-radius: 5px; background: #211b1e; left: 50%; top: 3px; transform: translateX(-50%); }
+    .note { max-width: 470px; text-align: center; margin: 18px 0 0; color: var(--muted); font-size: 11px; line-height: 1.5; }
+    @media (max-width: 480px) {
+      body { background: var(--cream); }
+      .page { padding: 0; min-height: 100svh; justify-content: flex-start; }
+      .phone { width: 100%; border: 0; padding: 0; border-radius: 0; box-shadow: none; }
+      .chat { height: 100svh; min-height: 420px; border-radius: 0; }
+      .phone-top { height: max(16px, env(safe-area-inset-top)); }
+      .island, .home-indicator { display: none; }
+      .chat-top { padding: 12px 20px 20px; }
+      .status { padding-bottom: max(12px, env(safe-area-inset-bottom)); }
+      .note { padding: 0 20px 16px; }
     }
+    @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
   </style>
 </head>
 <body>
   <main class="page">
-    <div class="brand"><span class="brand-mark" aria-hidden="true">d</span>dyseurope</div>
-    <header class="heading">
-      <p class="eyebrow">Votre assistant, à votre rythme</p>
-      <h1>Une voix pour<br>vous accompagner.</h1>
-      <p class="intro">Une question sur la dyslexie ou les troubles dys ?<br>Parlons-en simplement, à l’oral ou par écrit.</p>
-    </header>
-    <section class="chat" aria-label="Conversation avec Dyseurope">
-      <div class="chat-top"><strong>Assistant Dyseurope</strong><span class="tag">En français · Voix & texte</span></div>
-      <div class="voice-area">
-        <button class="mic" id="mic" type="button" aria-label="Dicter un message en français" aria-pressed="false" aria-describedby="mic-help">
+    <div class="phone">
+      <section class="chat" aria-label="Conversation avec Dyseurope">
+        <div class="phone-top" aria-hidden="true"><span class="island"></span></div>
+        <header class="chat-top"><span class="brand-mark" aria-hidden="true">d</span><div><h1>dyseurope</h1><span class="tag">Votre assistant · Voix & texte</span></div></header>
+        <div class="messages" id="messages" role="log" aria-label="Messages" aria-live="polite" aria-relevant="additions" tabindex="0">
+          <div class="message"><span class="speaker">DYSEUROPE</span><p class="bubble">Bonjour ! Je suis l’assistant Dyseurope. Écrivez-moi ou touchez le micro pour dicter votre question. Comment puis-je vous aider ?</p></div>
+        </div>
+        <form class="composer" id="form">
+          <label for="message">Votre message</label>
+          <div class="input-row">
+            <textarea id="message" name="message" rows="1" maxlength="4000" placeholder="Votre message…" required aria-describedby="input-help mic-help"></textarea>
+            <button class="mic" id="mic" type="button" aria-label="Dicter un message en français" aria-pressed="false" aria-describedby="mic-help">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3M8 22h8"/></svg>
         </button>
-        <p id="mic-help">Touchez le micro, puis parlez. Relisez avant d’envoyer.</p>
-      </div>
-      <div class="messages" id="messages" role="log" aria-label="Messages" aria-live="polite" aria-relevant="additions" tabindex="0">
-        <div class="message"><span class="speaker">DYSEUROPE</span><p class="bubble">Bonjour ! Je suis l’assistant Dyseurope. Vous pouvez m’écrire ou dicter votre question. Comment puis-je vous aider ?</p></div>
-      </div>
-      <form class="composer" id="form">
-        <label for="message">Votre message</label>
-        <div class="input-row">
-          <textarea id="message" name="message" rows="2" maxlength="4000" placeholder="Écrivez votre question ici…" required aria-describedby="input-help"></textarea>
-          <button class="send" id="send" type="submit">Envoyer ↗</button>
-        </div>
-        <div class="controls">
-          <label><input id="voice" type="checkbox" checked>Lire les réponses à voix haute</label>
-          <button class="stop" id="stop" type="button">Arrêter la lecture</button>
-        </div>
-        <span id="input-help" class="tag">Entrée : envoyer · Maj + Entrée : nouvelle ligne</span>
-      </form>
-      <p class="status" id="status" role="status" aria-live="polite">Prêt à vous écouter ou à vous lire.</p>
-    </section>
+            <button class="send" id="send" type="submit" aria-label="Envoyer le message"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="m4 3 17 9-17 9 4-9-4-9ZM8 12h13"/></svg></button>
+          </div>
+          <div class="controls">
+            <label><input id="voice" type="checkbox" checked>Réponses à voix haute</label>
+            <button class="stop" id="stop" type="button">Arrêter la lecture</button>
+          </div>
+          <span id="input-help">Entrée : envoyer · Maj + Entrée : nouvelle ligne</span>
+          <span id="mic-help" class="speaker">Touchez le micro, puis parlez. Relisez avant d’envoyer.</span>
+        </form>
+        <p class="status" id="status" role="status" aria-live="polite">Prêt à vous écouter ou à vous lire.</p>
+        <div class="home-indicator" aria-hidden="true"></div>
+      </section>
+    </div>
     <p class="note">Vos messages sont transmis à l’assistant via n8n. Selon votre navigateur, la dictée peut utiliser un service vocal externe. L’assistant peut se tromper ; ses réponses ne remplacent pas l’avis d’un professionnel.</p>
   </main>
   <script>
