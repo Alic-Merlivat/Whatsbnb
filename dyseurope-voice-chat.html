@@ -30,11 +30,21 @@
     .speaker { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
     .bubble { margin: 0; padding: 14px 17px; border: 1px solid #efe7e8; border-radius: 20px 20px 20px 5px; background: #fff; white-space: pre-wrap; overflow-wrap: anywhere; }
     .user .bubble { background: var(--wine); color: #fff; border-color: var(--wine); border-radius: 20px 20px 5px 20px; }
+    .bubble a, .note a { color: var(--wine); text-decoration: underline; text-underline-offset: 3px; }
+    .user .bubble a { color: white; }
+    .waiting { color: var(--muted); font-size: 14px; }
+    .waiting .bubble { display: flex; align-items: center; gap: 9px; }
+    .waiting-dots { display: inline-flex; gap: 3px; }
+    .waiting-dots span { width: 5px; height: 5px; border-radius: 50%; background: var(--wine); animation: pulse 1.2s infinite alternate; }
+    .waiting-dots span:nth-child(2) { animation-delay: .2s; }
+    .waiting-dots span:nth-child(3) { animation-delay: .4s; }
+    @keyframes pulse { to { opacity: .25; transform: translateY(-3px); } }
+    @media (prefers-reduced-motion: reduce) { .waiting-dots span { animation: none; } }
     .replay { border: 0; border-radius: 22px; background: #f0e1e6; color: var(--wine); padding: 9px 14px; margin-top: 7px; font-size: 13px; min-height: 40px; }
     .composer { flex-shrink: 0; background: #fffaf8; border-top: 1px solid #eee2e5; border-radius: 26px 26px 0 0; padding: 14px 13px 4px; }
     label[for="message"], #input-help { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
     .input-row { display: flex; align-items: flex-end; gap: 8px; }
-    textarea { display: block; flex: 1; min-width: 0; width: 100%; resize: none; height: 50px; min-height: 50px; max-height: 110px; border: 1px solid #decbd2; border-radius: 25px; padding: 12px 15px; color: var(--ink); background: #fff; line-height: 24px; font-size: 16px; }
+    textarea { display: block; flex: 1; min-width: 0; width: 100%; resize: none; height: 50px; min-height: 50px; max-height: 146px; overflow-y: auto; border: 1px solid #decbd2; border-radius: 25px; padding: 12px 15px; color: var(--ink); background: #fff; line-height: 24px; font-size: 16px; }
     textarea::placeholder { color: #8d7d83; }
     .mic, .send { display: grid; place-items: center; flex: 0 0 48px; width: 48px; height: 50px; border-radius: 50%; padding: 0; }
     .mic { border: 1px solid #dec2cc; background: transparent; color: var(--wine); }
@@ -93,7 +103,7 @@
         <div class="home-indicator" aria-hidden="true"></div>
       </section>
     </div>
-    <p class="note">Vos messages sont transmis à l’assistant via n8n. Selon votre navigateur, la dictée peut utiliser un service vocal externe. L’assistant peut se tromper ; ses réponses ne remplacent pas l’avis d’un professionnel.</p>
+<p class="note">Créé par <a href="mailto:info@axxio.co">Alic Merlivat</a>. L’assistant peut se tromper. Ses réponses ne remplacent pas l’avis d’un professionnel.</p>
   </main>
   <script>
     'use strict';
@@ -123,6 +133,63 @@
     function status(text, error = false) {
       $('status').textContent = text;
       $('status').classList.toggle('error', error);
+    }
+
+    function resizeInput() {
+      input.style.height = 'auto';
+      // Five 24px lines, plus padding and borders. Longer drafts scroll inside.
+      input.style.height = Math.min(146, Math.max(50, input.scrollHeight + 2)) + 'px';
+    }
+    input.addEventListener('input', resizeInput);
+    window.addEventListener('resize', resizeInput);
+
+    function appendReplyText(bubble, text) {
+      // Create DOM nodes only: model output never becomes executable HTML.
+      const tokens = /\[([^\]\n]*)\]\((https?:\/\/(?:[^\s()]|\([^\s()]*\))+)\)|https?:\/\/[^\s<>"']+/gi;
+      let cursor = 0;
+      for (const match of text.matchAll(tokens)) {
+        bubble.append(document.createTextNode(text.slice(cursor, match.index)));
+        let url = match[2] || match[0];
+        let suffix = '';
+        if (!match[2]) {
+          while (/[.,;:!?]$/.test(url) || (url.endsWith(')') && (url.match(/\)/g) || []).length > (url.match(/\(/g) || []).length)) {
+            suffix = url.slice(-1) + suffix;
+            url = url.slice(0, -1);
+          }
+        }
+        try {
+          const destination = new URL(url);
+          if (!['https:', 'http:'].includes(destination.protocol) || !destination.hostname || destination.username || destination.password) throw new Error('unsafe-link');
+          const link = document.createElement('a');
+          link.href = destination.href;
+          link.target = '_blank';
+          link.rel = 'noopener noreferrer';
+          link.textContent = 'Lien';
+          bubble.append(link, document.createTextNode(suffix));
+        } catch {
+          bubble.append(document.createTextNode(match[0]));
+        }
+        cursor = match.index + match[0].length;
+      }
+      bubble.append(document.createTextNode(text.slice(cursor)));
+    }
+
+    function showWaiting() {
+      const item = document.createElement('div');
+      item.className = 'message waiting';
+      const bubble = document.createElement('p');
+      bubble.className = 'bubble';
+      const dots = document.createElement('span');
+      dots.className = 'waiting-dots';
+      dots.setAttribute('aria-hidden', 'true');
+      for (let i = 0; i < 3; i++) dots.append(document.createElement('span'));
+      const label = document.createElement('span');
+      label.textContent = 'Dyseurope prépare sa réponse…';
+      bubble.append(dots, label);
+      item.append(bubble);
+      log.append(item);
+      log.scrollTop = log.scrollHeight;
+      return { item, label };
     }
 
     function stopSpeaking() {
@@ -207,7 +274,8 @@
       const bubble = document.createElement('p');
       bubble.className = 'bubble';
       // Treat all user and workflow content as text, never executable HTML.
-      bubble.textContent = text;
+      if (role === 'assistant') appendReplyText(bubble, text);
+      else bubble.textContent = text;
       item.append(name, bubble);
       if (role === 'assistant' && (canSpeak || (canPlayAudio && audio))) {
         const replay = document.createElement('button');
@@ -244,6 +312,12 @@
       const replyPlaybackVersion = playbackVersion;
       addMessage(text, 'user');
       input.value = '';
+      resizeInput();
+      const waiting = showWaiting();
+      const waitingTimer = setTimeout(() => {
+        waiting.label.textContent = 'La réponse et sa voix sont en préparation…';
+        status('Cela prend un peu de temps. Votre question est bien reçue.');
+      }, 8000);
       status('Dyseurope prépare sa réponse…');
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 90000);
@@ -266,6 +340,7 @@
         const answer = responseText(data);
         const payload = Array.isArray(data) ? data[0] : data;
         const audio = payload && typeof payload === 'object' ? payload.audio : null;
+        waiting.item.remove();
         addMessage(answer, 'assistant', audio);
         status('Réponse reçue. Vous pouvez poser une autre question.');
         if ($('voice').checked && replyPlaybackVersion === playbackVersion) speak(answer, audio);
@@ -276,6 +351,9 @@
           : 'La réponse est indisponible. Vérifiez votre connexion puis réessayez. Votre message est conservé.', true);
       } finally {
         clearTimeout(timeout);
+        clearTimeout(waitingTimer);
+        waiting.item.remove();
+        resizeInput();
         busy = false;
         $('send').disabled = false;
         mic.disabled = !recognition;
@@ -320,6 +398,7 @@
       recognition.onresult = (event) => {
         const transcript = Array.from(event.results, (result) => result[0].transcript).join(' ');
         input.value = (draft + (draft ? ' ' : '') + transcript).slice(0, 4000);
+        resizeInput();
       };
       recognition.onerror = (event) => {
         failed = true;
@@ -361,3 +440,4 @@
   </script>
 </body>
 </html>
+
