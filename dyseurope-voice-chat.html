@@ -24,7 +24,10 @@
     h1 { margin: 0; color: white; font-size: 25px; line-height: 1.25; letter-spacing: -.6px; }
     .tag { font-size: 13px; color: var(--muted); }
     .chat-top .tag { color: #f2dfe5; font-size: 14px; }
-    .messages { flex: 1; min-height: 0; overflow-y: auto; padding: 26px 18px 12px; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: #d9c2cb transparent; }
+    .messages { flex: 1; min-height: 0; overflow-y: auto; padding: 26px 18px 12px; overscroll-behavior: contain; overflow-anchor: none; scrollbar-width: thin; scrollbar-color: #d9c2cb transparent; }
+    .suggestions { display: grid; gap: 6px; margin: 0 0 12px; }
+    .suggestion { text-align: left; border: 1px solid #decbd2; border-radius: 16px; padding: 9px 12px; background: #fffaf8; color: var(--wine); font-size: 13px; line-height: 1.4; min-height: 44px; }
+    .suggestion:hover:not(:disabled) { background: #f0e1e6; }
     .message { margin-bottom: 19px; max-width: 89%; }
     .message.user { margin-left: auto; }
     .speaker { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
@@ -81,7 +84,12 @@
         <div class="phone-top" aria-hidden="true"><span class="island"></span></div>
         <header class="chat-top"><span class="brand-mark" aria-hidden="true">d</span><div><h1>dyseurope</h1><span class="tag">Votre assistant · Voix & texte</span></div></header>
         <div class="messages" id="messages" role="log" aria-label="Messages" aria-live="polite" aria-relevant="additions" tabindex="0">
-          <div class="message"><span class="speaker">DYSEUROPE</span><p class="bubble">Bonjour ! Je suis l’assistant Dyseurope. Écrivez-moi ou touchez le micro pour dicter votre question. Comment puis-je vous aider ?</p></div>
+          <div class="message"><span class="speaker">DYSEUROPE</span><p class="bubble">Bonjour ! Comment puis-je vous aider ?</p></div>
+          <div class="suggestions" role="group" aria-label="Questions pour commencer">
+            <button class="suggestion" type="button">Quelle est la différence avec l’orthophonie ?</button>
+            <button class="suggestion" type="button">Pourquoi la méthode ABC a-t-elle autant de succès ?</button>
+            <button class="suggestion" type="button">Je suis perdu, rien ne semble aider mon enfant.</button>
+          </div>
         </div>
         <form class="composer" id="form">
           <label for="message">Votre message</label>
@@ -113,6 +121,7 @@
     const input = $('message');
     const mic = $('mic');
     const log = $('messages');
+    const suggestions = Array.from(document.querySelectorAll('.suggestion'));
     const synth = window.speechSynthesis;
     const canSpeak = Boolean(synth && window.SpeechSynthesisUtterance);
     const canPlayAudio = typeof window.Audio === 'function';
@@ -133,6 +142,15 @@
     function status(text, error = false) {
       $('status').textContent = text;
       $('status').classList.toggle('error', error);
+    }
+
+    function updateSuggestions() {
+      for (const button of suggestions) button.disabled = busy || listening;
+    }
+
+    function keepQuestionVisible(question) {
+      // Scroll only the conversation, keeping the question above the reply.
+      log.scrollTop += question.getBoundingClientRect().top - log.getBoundingClientRect().top - 12;
     }
 
     function resizeInput() {
@@ -188,7 +206,6 @@
       bubble.append(dots, label);
       item.append(bubble);
       log.append(item);
-      log.scrollTop = log.scrollHeight;
       return { item, label };
     }
 
@@ -289,7 +306,7 @@
         item.append(replay);
       }
       log.append(item);
-      log.scrollTop = log.scrollHeight;
+      return item;
     }
 
     function responseText(data) {
@@ -310,10 +327,12 @@
       log.setAttribute('aria-busy', 'true');
       stopSpeaking();
       const replyPlaybackVersion = playbackVersion;
-      addMessage(text, 'user');
+      updateSuggestions();
+      const question = addMessage(text, 'user');
       input.value = '';
       resizeInput();
       const waiting = showWaiting();
+      keepQuestionVisible(question);
       const waitingTimer = setTimeout(() => {
         waiting.label.textContent = 'La réponse et sa voix sont en préparation…';
         status('Cela prend un peu de temps. Votre question est bien reçue.');
@@ -342,6 +361,7 @@
         const audio = payload && typeof payload === 'object' ? payload.audio : null;
         waiting.item.remove();
         addMessage(answer, 'assistant', audio);
+        keepQuestionVisible(question);
         status('Réponse reçue. Vous pouvez poser une autre question.');
         if ($('voice').checked && replyPlaybackVersion === playbackVersion) speak(answer, audio);
       } catch (error) {
@@ -359,10 +379,19 @@
         mic.disabled = !recognition;
         input.disabled = false;
         log.setAttribute('aria-busy', 'false');
-        input.focus();
+        updateSuggestions();
+        input.focus({ preventScroll: true });
       }
     }
 
+    for (const button of suggestions) {
+      button.addEventListener('click', () => {
+        if (busy || listening) return;
+        input.value = button.textContent;
+        resizeInput();
+        $('form').requestSubmit();
+      });
+    }
     $('form').addEventListener('submit', sendMessage);
     input.addEventListener('keydown', (event) => {
       if (event.key === 'Enter' && !event.shiftKey && !event.isComposing) {
@@ -389,6 +418,7 @@
       let failed = false;
       recognition.onstart = () => {
         listening = true;
+        updateSuggestions();
         mic.setAttribute('aria-pressed', 'true');
         mic.setAttribute('aria-label', 'Terminer la dictée');
         $('send').disabled = true;
@@ -413,12 +443,13 @@
       };
       recognition.onend = () => {
         listening = false;
+        updateSuggestions();
         mic.setAttribute('aria-pressed', 'false');
         mic.setAttribute('aria-label', 'Dicter un message en français');
         $('send').disabled = busy;
         input.disabled = busy;
         if (!failed && !busy) status('Relisez votre message, puis sélectionnez Envoyer.');
-        if (!busy) input.focus();
+        if (!busy) input.focus({ preventScroll: true });
       };
       mic.addEventListener('click', () => {
         if (busy) return;
