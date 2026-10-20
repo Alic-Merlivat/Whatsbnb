@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#741c38">
-  <meta name="description" content="Échangez avec l’assistant Dyseurope par écrit ou à la voix, en français.">
+  <meta name="description" content="Échangez avec Rose, l’assistante Dyseurope par écrit ou à la voix, en français.">
   <title>Dyseurope · Une voix pour vous accompagner</title>
   <style>
     :root { color-scheme: light; --wine: #741c38; --dark: #481327; --ink: #35232b; --muted: #79676e; --line: #e7d9dc; --cream: #faf6f2; }
@@ -80,11 +80,11 @@
 <body>
   <main class="page">
     <div class="phone">
-      <section class="chat" aria-label="Conversation avec Dyseurope">
+      <section class="chat" aria-label="Conversation avec Rose, l’assistante Dyseurope">
         <div class="phone-top" aria-hidden="true"><span class="island"></span></div>
-        <header class="chat-top"><span class="brand-mark" aria-hidden="true">d</span><div><h1>dyseurope</h1><span class="tag">Votre assistant · Voix & texte</span></div></header>
+        <header class="chat-top"><span class="brand-mark" aria-hidden="true">D</span><div><h1>Dyseurope</h1><span class="tag">Rose · Votre assistante</span></div></header>
         <div class="messages" id="messages" role="log" aria-label="Messages" aria-live="polite" aria-relevant="additions" tabindex="0">
-          <div class="message"><span class="speaker">DYSEUROPE</span><p class="bubble">Bonjour ! Comment puis-je vous aider ?</p></div>
+          <div class="message"><span class="speaker">ROSE</span><p class="bubble">Bonjour, je suis Rose. Comment puis-je vous aider ?</p></div>
           <div class="suggestions" role="group" aria-label="Questions pour commencer">
             <button class="suggestion" type="button">Quelle est la différence avec l’orthophonie ?</button>
             <button class="suggestion" type="button">Pourquoi la méthode ABC a-t-elle autant de succès ?</button>
@@ -202,7 +202,7 @@
       dots.setAttribute('aria-hidden', 'true');
       for (let i = 0; i < 3; i++) dots.append(document.createElement('span'));
       const label = document.createElement('span');
-      label.textContent = 'Dyseurope prépare sa réponse…';
+      label.textContent = 'Rose prépare sa réponse…';
       bubble.append(dots, label);
       item.append(bubble);
       log.append(item);
@@ -287,7 +287,7 @@
       item.className = 'message ' + role;
       const name = document.createElement('span');
       name.className = 'speaker';
-      name.textContent = role === 'user' ? 'VOUS' : 'DYSEUROPE';
+      name.textContent = role === 'user' ? 'VOUS' : 'ROSE';
       const bubble = document.createElement('p');
       bubble.className = 'bubble';
       // Treat all user and workflow content as text, never executable HTML.
@@ -337,7 +337,7 @@
         waiting.label.textContent = 'La réponse et sa voix sont en préparation…';
         status('Cela prend un peu de temps. Votre question est bien reçue.');
       }, 8000);
-      status('Dyseurope prépare sa réponse…');
+      status('Rose prépare sa réponse…');
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 90000);
       try {
